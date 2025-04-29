@@ -1,13 +1,17 @@
 {
-  "name": "go-drive",
+  "name": "drive",
   "main": "expo-router/entry",
   "version": "0.0.1",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "npx expo start",
+    "android": "npx expo run:android",
+    "ios": "npx expo run:ios",
     "web": "expo start --web",
-    "test": "jest --watchAll"
+    "eas:android": "eas build --platform android --profile development",
+    "eas:ios": "eas build --platform ios --profile development",
+    "test": "jest --watchAll",
+    "prebuild": "npx expo prebuild",
+    "prebuild:clean": "npx expo prebuild --clean"
   },
   "jest": {
     "preset": "jest-expo"
@@ -17,6 +21,7 @@
     "@react-navigation/native": "^7.0.14",
     "expo": "~52.0.46",
     "expo-constants": "17.0.8",
+    "expo-dev-client": "~5.0.20",
     "expo-font": "~13.0.4",
     "expo-linking": "~7.0.5",
     "expo-modules-core": "2.2.3",
@@ -42,5 +47,16 @@
     "react-test-renderer": "18.3.1",
     "typescript": "~5.3.3"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "name": "drive",
+    "slug": "drive",
+    "ios": {
+      "bundleIdentifier": "com.go.drive"
+    },
+    "android": {
+      "package": "com.go.drive"
+    },
+    "scheme": "drive"
+  }
 }
