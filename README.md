@@ -23,12 +23,11 @@ Make sure to add your Android SDK location in `android/local.properties` > `sdk.
 4. Open debugger menu: `cmd + ctrl + z`
 5. Physical device: Install the Expo Go app and scan the QR code after starting the dev server.
 
-## EAS build
+## EAS build (Preferred way to develop on local)
 1. Go through this link first if you are not familiar with EAS build: https://docs.expo.dev/develop/development-builds/create-a-build/
-2. Log in to your EAS account from the terminal
-3. For IOS: `yarn run eas:ios`
-4. For Android: `yarn run eas:android`
-5. Physical device: Expo Orbit
+2. Log in to your EAS account from the terminal.
+3. IOS: EAS build number `f93736c1` (ios simulator build), from the Expo dev dashboard,  start with `Open with Orbit`.
+4. Android: EAS build number `19028b4d` (Android internal distribution build), from the expo dev dashboard, and then install on device.
 
  ## Use Prebuild - when and how?
 
