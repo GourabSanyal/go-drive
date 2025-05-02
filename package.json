@@ -4,11 +4,14 @@
   "version": "0.0.1",
   "scripts": {
     "start": "npx expo start",
+    "dev": "APP_VARIANT=development npx expo start",
+    "preview": "APP_VARIANT=preview npx expo start",
     "android": "npx expo run:android",
     "ios": "npx expo run:ios",
     "web": "expo start --web",
-    "eas:android": "eas build --platform android --profile development",
-    "eas:ios": "eas build --platform ios --profile development",
+    "eas:android": "eas build --platform android --profile development --local",
+    "eas:ios": "eas build --platform ios --profile development --local",
+    "eas:ios-simulator": "eas build --platform ios --profile ios-simulator --local",
     "test": "jest --watchAll",
     "prebuild": "npx expo prebuild",
     "prebuild:clean": "npx expo prebuild --clean"
