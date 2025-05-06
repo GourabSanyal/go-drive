@@ -5,10 +5,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@types/*": ["./src/types/*"],
+      "@src/*": ["./src/*"],
       "@enums/*": ["./src/enums/*"],
       "@components/*": ["./components/*"],
-      "@utils/*": ["./src/utils/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "include": [

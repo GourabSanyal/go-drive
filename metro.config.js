@@ -6,9 +6,10 @@ const path = require('path');
 const config = getDefaultConfig(__dirname);
 config.resolver.alias = {
   '@': path.resolve(__dirname),
-  '@types': path.resolve(__dirname, 'src/types'),
+  '@src': path.resolve(__dirname, 'src'),
   '@enums': path.resolve(__dirname, 'src/enums'),
   '@components': path.resolve(__dirname, 'components'),
+  '@utils': path.resolve(__dirname, 'src/utils')
 };
 
 module.exports = config;
