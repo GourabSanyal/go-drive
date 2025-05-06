@@ -38,6 +38,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "scheme": "drive",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "jsEngine": "hermes",
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
@@ -45,14 +46,19 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": getUniqueIdentifier()
+      "bundleIdentifier": getUniqueIdentifier(),
+      "jsEngine": "hermes"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": getUniqueIdentifier()
+      "package": getUniqueIdentifier(),
+      "jsEngine": "hermes"
+    },
+    "developmentClient": {
+      "silentLaunch": true
     },
     "web": {
       "bundler": "metro",
