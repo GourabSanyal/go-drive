@@ -7,10 +7,12 @@ import EditScreenInfo from '@/components/EditScreenInfo';
 export default function TabOneScreen() {
 
   const callSocket = () => {
+    console.log("socket called");
     const socket = new WebSocket("ws://localhost:8080");
     socket.onopen = () => {
       console.log("Connected to server");
     };
+
   };
 
   return (
