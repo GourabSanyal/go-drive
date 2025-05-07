@@ -10,10 +10,16 @@ Make sure to add your Android SDK location in `android/local.properties` > `sdk.
   1. Run at the root of the project: `yarn install`
   2. Install pods: `cd ios && pod install`
 
+## Run iOS and Android
+  1. Start server: `yarn start`
+  2. Start IOS emulator: `i`, Android emulator: `a`
+  3. If you want to get a dev build without starting the server first, run `yarn run ios` for iOS dev build, and `yarn run android` for Android build
+  4. You can create dev builds using the USB debugger option. [Read the documentation](https://reactnative.dev/docs/running-on-device)
+
 ## Use EAS developer build from Expo Dev Dashboard
 1. Go through this link first if you are not familiar with EAS build: https://docs.expo.dev/develop/development-builds/create-a-build/
 2. Log in to your EAS account from the terminal.
-3. IOS: EAS build number `f93736c1` (ios simulator build), from the Expo dev dashboard,  start with `Open with Orbit`.
+3. iOS: EAS build number `f93736c1` (iOS simulator build), from the Expo dev dashboard,  start with `Open with Orbit`.
 4. Android: EAS build number `19028b4d` (Android internal distribution build), from the Expo dev dashboard, and then install on the device.
 
  ## Use Prebuild - when and how?
