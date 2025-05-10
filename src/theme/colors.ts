@@ -1,0 +1,9 @@
+export const primaryColor = "#00A79D";
+export const errorColor = "#FF3B30";
+export const backgroundPrimary = "#121212";
+export const textPrimary = "#FFFFFF";
+export const textSecondary = "#B0B0B0";
+export const inputBackground = "#2C2C2C";
+export const inputBorderColor = "#444444";
+export const cardBackground = "#1E1E1E";
+export const successColor = "#34C759";
