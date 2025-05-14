@@ -34,12 +34,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "slug": "go-cabs-and-drive",
     "version": "0.0.1",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icons/icon.png",
     "scheme": "drive",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/splash-icon.png",
+      "image": "./assets/images/icons/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -49,7 +49,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": getUniqueIdentifier()
@@ -57,7 +57,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/icons/favicon.png"
     },
     "plugins": [
       "expo-router"
