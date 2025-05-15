@@ -4,8 +4,19 @@ import QuickActionGrid from './QuickActionGrid'
 import LocationPicker from './LocationPicker'
 import { View } from 'react-native'
 import HomeModal from './HomeModal'
+import { useSocket } from '@/src/hooks/useSocket'
+import { useEffect } from 'react'
 
 export default function Home() {
+  const { isConnected, connect, announceDriverReady } = useSocket()
+
+  useEffect(() => {
+    if (!isConnected) {
+      connect()
+      announceDriverReady()
+    }
+  }, [])
+
   return (
     <View
       style={CommonStyles.container}>

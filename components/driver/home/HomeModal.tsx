@@ -7,6 +7,7 @@ import HomeUserCard, { HomeUserCardProps } from './HomeUserCard';
 import ModalRideDetails, { ModalRideDetailsProps } from './ModalRideDetails';
 import { useRouter } from 'expo-router';
 import AcceptRejectButtons from './AcceptRejectButtons';
+import { useSocket } from '@/src/hooks/useSocket';
 
 export interface HomeModalProps extends HomeUserCardProps, ModalRideDetailsProps { }
 
@@ -18,6 +19,7 @@ const HomeModal: FC<HomeModalProps> = ({
 }) => {
   const router = useRouter()
   const [visible, setVisible] = useState(false);
+  const { notifyRideCompleted } = useSocket()
 
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
@@ -54,7 +56,7 @@ const HomeModal: FC<HomeModalProps> = ({
         </Modal>
       </Portal>
       {/* TODO: Delele this later */}
-      <CustomButton
+      {/* <CustomButton
         status='danger'
         style={{ marginTop: 30, position: "absolute", top: 0, right: 0, zIndex: 10 }}
         onPress={showModal}>
@@ -65,7 +67,7 @@ const HomeModal: FC<HomeModalProps> = ({
         style={{ marginTop: 30, position: "absolute", top: 80, right: 0, zIndex: 10 }}
         onPress={() => router.push("/driver/(home)/upcoming-rides")}>
         Rides Screen
-      </CustomButton>
+      </CustomButton> */}
     </>
   );
 }

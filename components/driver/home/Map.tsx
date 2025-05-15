@@ -3,13 +3,20 @@ import { View, Alert } from 'react-native'
 import { locationStyles as styles } from './styles';
 import MapView, { Marker, MapPressEvent, Region } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { useSocket } from '@/src/hooks/useSocket';
 
 export default function Map() {
     const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-    const [lng, setLng] = useState<number>()
+    const [lon, setLon] = useState<number>()
     const [lat, setLat] = useState<number>()
     const [region, setRegion] = useState<Region | null>(null);
     const [geoData, setGeoData] = useState<Location.LocationGeocodedAddress>()
+    const { sendLocation } = useSocket()
+
+    useEffect(() => {
+        if (!lat || !lon) return
+        sendLocation({ lat, lon })
+    }, [])
 
     useEffect(() => {
         (async () => {
@@ -26,7 +33,7 @@ export default function Map() {
                 longitude: loc.coords.longitude
             };
             setLocation(coords);
-            setLng(coords.longitude)
+            setLon(coords.longitude)
             setLat(coords.latitude)
             setRegion({
                 ...coords,
@@ -39,7 +46,7 @@ export default function Map() {
     const handleMapPress = async (e: MapPressEvent) => {
         const coords = e.nativeEvent.coordinate;
         setLocation(coords);
-        setLng(coords.longitude)
+        setLon(coords.longitude)
         setLat(coords.latitude)
         const geoData: Location.LocationGeocodedAddress[] = await Location.reverseGeocodeAsync({
             latitude: coords.latitude,

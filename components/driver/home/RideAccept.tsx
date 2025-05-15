@@ -12,9 +12,11 @@ import CallMsgButtons from './CallMsgButtons';
 import { Colors } from '@/theme/colors';
 import Map from './Map';
 import PaymentReceived from './PaymentReceived';
+import { useSocket } from '@/src/hooks/useSocket';
 
 export default function RideAccept() {
     const router = useRouter()
+    const { isConnected,  notifyRideCompleted } = useSocket()
     const [rideStarted, setRideStarted] = useState(false)
     const [rideCompleted, setRideCompleted] = useState(false)
     const bottomSheetRef = useRef<BottomSheet>(null);
