@@ -15,51 +15,114 @@ import { primaryColor, errorColor } from "../src/theme/colors";
 const DriverActiveRideScreen = () => {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { currentRideState, isConnected, sendLocation, notifyRideCompleted } =
+  const { driverRideState, isConnected, sendLocation, completeRide } =
     useSocket();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const currentRideState = driverRideState;
+
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const rideIdFromParams = params.rideId as string | undefined;
+  const activeRideRoomIdFromParams = params.activeRideRoomId as
+    | string
+    | undefined;
+
   useEffect(() => {
-    if (!params.rideId || !params.activeRideRoomId) {
+    if (!rideIdFromParams || !activeRideRoomIdFromParams) {
       console.error("DriverActiveRideScreen: Missing required params!");
       Alert.alert("Error", "Ride details not found. Navigating back.", [
         { text: "OK", onPress: () => router.back() },
       ]);
+      setIsLoading(false);
       return;
     }
 
     console.log("DriverActiveRideScreen mounted with params:", params);
 
-    // Validate that we're tracking the correct ride
-    if (currentRideState.rideId && currentRideState.rideId !== params.rideId) {
-      Alert.alert(
-        "Ride Status Changed",
-        "This ride is no longer active. Navigating back.",
-        [{ text: "OK", onPress: () => router.back() }]
+    if (currentRideState) {
+      console.log(
+        "DriverActiveRideScreen currentRideState on mount/update:",
+        JSON.stringify(currentRideState)
       );
-    }
-  }, [currentRideState, router, params]);
+      if (
+        currentRideState.activeRideId &&
+        currentRideState.activeRideId !== rideIdFromParams &&
+        currentRideState.status !== "ride_completed" &&
+        currentRideState.status !== "error"
+      ) {
+        Alert.alert(
+          "Ride Status Changed",
+          "This ride is no longer active or you've been assigned a different one. Navigating back.",
+          [{ text: "OK", onPress: () => router.back() }]
+        );
+        setIsLoading(false);
+        return;
+      }
 
-  // Effect to handle ride completion
-  useEffect(() => {
-    if (currentRideState.status === "completed") {
-      Alert.alert(
-        "Ride Completed",
-        "The ride has been completed successfully!",
-        [
-          {
-            text: "OK",
-            onPress: () => router.back(),
-          },
-        ]
+      if (
+        currentRideState.status === "bid_accepted_starting_ride" ||
+        currentRideState.status === "ride_in_progress"
+      ) {
+        if (currentRideState.activeRideId === rideIdFromParams) {
+          setIsLoading(false);
+          setError(null);
+        } else if (
+          currentRideState.status === "bid_accepted_starting_ride" &&
+          !currentRideState.activeRideId
+        ) {
+          console.log(
+            "DriverActiveRideScreen: currentRideState status is bid_accepted_starting_ride, but activeRideId not yet set or doesn't match params. Waiting for sync."
+          );
+          setIsLoading(true);
+        }
+      } else if (
+        currentRideState.status === "idle" ||
+        currentRideState.status === "viewing_quotations" ||
+        currentRideState.status === "bidding_in_progress"
+      ) {
+        console.warn(
+          `DriverActiveRideScreen: Unexpected ride status: ${currentRideState.status} for ride ${rideIdFromParams}. Waiting for correct state or navigating back if stale.`
+        );
+        setIsLoading(true);
+      } else if (
+        currentRideState.status === "ride_completed" &&
+        currentRideState.activeRideId === rideIdFromParams
+      ) {
+        setIsLoading(false);
+      } else if (currentRideState.status === "error") {
+        console.warn(
+          `DriverActiveRideScreen: Received error state for ride ${rideIdFromParams}: ${currentRideState.errorMessage}`
+        );
+        setIsLoading(false);
+        setError(currentRideState.errorMessage || "An unknown error occurred.");
+      }
+    } else {
+      console.log(
+        "DriverActiveRideScreen: currentRideState is not yet available from useSocket. Loading..."
       );
+      setIsLoading(true);
     }
-  }, [currentRideState.status, router]);
+  }, [currentRideState, rideIdFromParams, activeRideRoomIdFromParams, router]);
+
+  useEffect(() => {
+    if (currentRideState && currentRideState.status === "ride_completed") {
+      if (currentRideState.activeRideId === rideIdFromParams) {
+        Alert.alert(
+          "Ride Completed",
+          "The ride has been completed successfully!",
+          [
+            {
+              text: "OK",
+              onPress: () => router.replace("/(tabs)/" as any),
+            },
+          ]
+        );
+      }
+    }
+  }, [currentRideState, rideIdFromParams, router]);
 
   const handleSendLocation = () => {
-    // Get current location from device
     navigator.geolocation.getCurrentPosition(
       (position) => {
         sendLocation({
@@ -87,59 +150,135 @@ const DriverActiveRideScreen = () => {
         {
           text: "Complete",
           onPress: () => {
-            notifyRideCompleted();
+            completeRide();
           },
         },
       ]
     );
   };
 
-  if (!params.rideId || !params.activeRideRoomId) {
+  if (!rideIdFromParams || !activeRideRoomIdFromParams) {
+    return (
+      <View style={styles.centered}>
+        <Text>Missing ride information.</Text>
+      </View>
+    );
+  }
+
+  if (isLoading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={primaryColor} />
-        <Text>Loading ride details...</Text>
+        <Text>Loading active ride details...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity
+          onPress={() => router.replace("/(tabs)/" as any)}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Go to Home</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   if (
-    currentRideState.rideId &&
-    currentRideState.rideId !== params.rideId &&
-    currentRideState.status !== "idle"
+    !currentRideState ||
+    currentRideState.activeRideId !== rideIdFromParams ||
+    (currentRideState.status !== "bid_accepted_starting_ride" &&
+      currentRideState.status !== "ride_in_progress" &&
+      currentRideState.status !== "ride_completed")
   ) {
+    if (
+      currentRideState &&
+      currentRideState.status === "ride_completed" &&
+      currentRideState.activeRideId === rideIdFromParams
+    ) {
+      return (
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={primaryColor} />
+          <Text>Finalizing ride completion...</Text>
+        </View>
+      );
+    }
+    console.warn(
+      "DriverActiveRideScreen: Invalid state or mismatched rideId. Displaying fallback UI.",
+      JSON.stringify(currentRideState),
+      "Params rideId:",
+      rideIdFromParams
+    );
     return (
       <View style={styles.centered}>
         <Text style={styles.errorText}>
-          This ride is no longer active or has been superseded.
+          There was an issue loading your ride details, the ride is no longer
+          active, or the state is unexpected.
         </Text>
+        <TouchableOpacity
+          onPress={() => router.replace("/(tabs)/" as any)}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Go to Home</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
+  const { confirmedRideDetails, riderInfo } = currentRideState;
+
+  console.log(
+    "[DriverActiveRideScreen] Rendering. Current currentRideState:",
+    JSON.stringify(currentRideState),
+    "isLoading:",
+    isLoading
+  );
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Active Ride</Text>
-      <Text style={styles.subtitle}>Ride ID: {params.rideId}</Text>
+      <Text style={styles.subtitle}>Ride ID: {rideIdFromParams}</Text>
 
       <View style={styles.rideInfoContainer}>
         <Text style={styles.sectionTitle}>Ride Details:</Text>
         <Text style={styles.infoText}>
-          From: {currentRideState.rideDetails?.pickupLocation?.address || "N/A"}
+          From: {confirmedRideDetails?.pickupLocation?.address || "N/A"}
         </Text>
         <Text style={styles.infoText}>
-          To: {currentRideState.rideDetails?.dropoffLocation?.address || "N/A"}
+          To: {confirmedRideDetails?.dropoffLocation?.address || "N/A"}
         </Text>
         <Text style={styles.infoText}>
-          Fare: {currentRideState.rideDetails?.fare?.baseFare || "N/A"}
+          Fare:{" "}
+          {currentRideState.acceptedBid
+            ? `${currentRideState.acceptedBid.amount.toFixed(2)} ${
+                currentRideState.acceptedBid.currency
+              }`
+            : confirmedRideDetails?.fareOffer?.amount
+            ? `${confirmedRideDetails.fareOffer.amount.toFixed(2)} ${
+                confirmedRideDetails.fareOffer.currency
+              }`
+            : "N/A"}
         </Text>
       </View>
+
+      {riderInfo && (
+        <View style={styles.rideInfoContainer}>
+          <Text style={styles.sectionTitle}>Rider Information:</Text>
+          <Text style={styles.infoText}>Name: {riderInfo.name || "N/A"}</Text>
+        </View>
+      )}
 
       <View style={styles.actionsContainer}>
         <TouchableOpacity
           style={styles.button}
           onPress={handleSendLocation}
-          disabled={!isConnected}
+          disabled={
+            !isConnected || currentRideState.status !== "ride_in_progress"
+          }
         >
           <Text style={styles.buttonText}>Send Location Update</Text>
         </TouchableOpacity>
@@ -147,13 +286,13 @@ const DriverActiveRideScreen = () => {
         <TouchableOpacity
           style={[styles.button, styles.completeButton]}
           onPress={handleCompleteRide}
-          disabled={!isConnected}
+          disabled={
+            !isConnected || currentRideState.status !== "ride_in_progress"
+          }
         >
           <Text style={styles.buttonText}>Complete Ride</Text>
         </TouchableOpacity>
       </View>
-
-      {error && <Text style={styles.errorText}>{error}</Text>}
     </ScrollView>
   );
 };
