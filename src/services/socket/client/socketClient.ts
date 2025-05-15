@@ -1,4 +1,9 @@
 import { io, Socket } from "socket.io-client";
+import {
+  BidDetailsForSocket,
+  DriverInfoForSocket,
+} from "../../../types/bid.types";
+import { QuotationRequest } from "../../../types/quotation.types";
 // RideRequestSchema might not be directly used for sending in this client anymore
 // import { RideRequestSchema } from "@src/types/ride/schema/ride.request";
 // import { validate } from "@utils/zod/validate";
@@ -93,10 +98,16 @@ class SocketClient {
       this.triggerEvent("driver_room_joined", data);
     });
 
-    this.socket.on("new_ride_to_bid_on", (data) => {
-      // data: { rideId, bidding_room_id, rideDetails }
-      this.triggerEvent("new_ride_to_bid_on", data);
-    });
+    this.socket.on(
+      "new_ride_to_bid_on",
+      (data: {
+        rideId: string;
+        bidding_room_id: string;
+        rideDetails: QuotationRequest;
+      }) => {
+        this.triggerEvent("new_ride_to_bid_on", data);
+      }
+    );
 
     this.socket.on("bid_submission_ack", (data) => {
       this.triggerEvent("bid_submission_ack", data);
@@ -209,14 +220,31 @@ class SocketClient {
     console.log("Emitted: driver_ready");
   }
 
-  public submitBid(bidding_room_id: string, bidDetails: any, driverInfo: any) {
-    if (!this.socket || !this.isConnected) return;
-    this.socket.emit("driver_submit_bid", {
-      bidding_room_id,
-      bidDetails,
-      driverInfo,
-    });
-    console.log("Emitted: driver_submit_bid", { bidding_room_id, bidDetails });
+  public submitBid(
+    bidding_room_id: string,
+    bidDetails: BidDetailsForSocket,
+    driverInfo: DriverInfoForSocket
+  ) {
+    if (this.socket && this.isConnected) {
+      const bidPayload = {
+        bidding_room_id,
+        bidDetails,
+        driverInfo,
+      };
+      this.socket.emit("driver_submit_bid", bidPayload);
+      console.log("(Driver) Emitted: driver_submit_bid", bidPayload);
+      this.triggerEvent("bid_sent_to_server", {
+        quotationRequestId: bidding_room_id,
+      });
+    } else {
+      console.warn(
+        "(Driver) Cannot submit bid: Not connected or no socket instance."
+      );
+      this.triggerEvent("bid_error", {
+        quotationRequestId: bidding_room_id,
+        message: "Cannot submit bid: Not connected.",
+      });
+    }
   }
 
   public sendLocation(location: any) {

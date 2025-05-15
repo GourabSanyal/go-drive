@@ -13,17 +13,8 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import {
-  RideRequest,
-  DriverBid,
-  BidSubmissionAckData,
-  BidErrorData,
-  BiddingClosedRideAssignedData,
-  RideConfirmedToDriverData,
-  RideFinalizedData,
-  NewRideToBidOnEventData,
-  RideDetailsInternal,
-} from "../../src/types/socket";
+import { QuotationRequest } from "../../src/types/quotation.types";
+import { BidSubmitPayload } from "../../src/types/bid.types";
 import {
   primaryColor,
   errorColor,
@@ -49,152 +40,71 @@ export default function DriverDashboardScreen() {
     socketId,
     connect: connectSocket,
     disconnect: disconnectSocket,
-    announceDriverReady,
-    submitBid,
+    announceDriverAvailability,
+    submitDriverBid,
+    availableQuotations,
+    driverRideState,
   } = useSocket();
 
-  const [availableRideRequests, setAvailableRideRequests] = useState<
-    RideRequest[]
-  >([]);
-  const [selectedRide, setSelectedRide] = useState<RideRequest | null>(null);
+  const [selectedQuotation, setSelectedQuotation] =
+    useState<QuotationRequest | null>(null);
   const [bidAmount, setBidAmount] = useState<string>("");
+  const [estimatedArrivalTime, setEstimatedArrivalTime] =
+    useState<string>("5 mins");
   const [submissionStatus, setSubmissionStatus] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
 
   useEffect(() => {
     if (isConnected && socketId) {
-      announceDriverReady();
+      announceDriverAvailability(true);
     }
-  }, [isConnected, socketId, announceDriverReady]);
+  }, [isConnected, socketId, announceDriverAvailability]);
 
   useEffect(() => {
-    const handleNewRideToBidOn = (data: NewRideToBidOnEventData) => {
-      console.log(
-        "Driver App: Received new_ride_to_bid_on (structured):",
-        JSON.stringify(data)
-      );
-
-      const newRideForState: RideRequest = {
-        rideId: data.rideId,
-        bidding_room_id: data.bidding_room_id,
-        rideDetails: data.rideDetails,
-      };
-
-      console.log(
-        "Driver App: Storing new object in state (with nested rideDetails):",
-        JSON.stringify(newRideForState)
-      );
-
-      setAvailableRideRequests((prevRequests) => {
-        const existingIndex = prevRequests.findIndex(
-          (r) => r.rideId === newRideForState.rideId
-        );
-        if (existingIndex !== -1) {
-          const updatedRequests = [...prevRequests];
-          updatedRequests[existingIndex] = newRideForState;
-          console.log(
-            "Driver App: Updating existing ride in state:",
-            JSON.stringify(updatedRequests)
-          );
-          return updatedRequests;
-        }
-        const newRequests = [...prevRequests, newRideForState];
-        console.log(
-          "Driver App: Adding new ride to state:",
-          JSON.stringify(newRequests)
-        );
-        return newRequests;
-      });
-      setSubmissionStatus("");
-    };
-
-    const handleBidSubmissionAck = (ack: BidSubmissionAckData) => {
-      console.log("Driver App: Bid submission acknowledged:", ack);
-      setSubmissionStatus(`Bid submitted: ${ack.message}`);
-      setIsSubmitting(false);
-      setSelectedRide(null);
-      setBidAmount("");
-    };
-
-    const handleBidError = (error: BidErrorData) => {
-      console.error("Driver App: Bid submission error:", error);
-      setSubmissionStatus(`Bid Error: ${error.message}`);
-      setIsSubmitting(false);
-    };
-
-    const handleBiddingClosedRideAssigned = (
-      data: BiddingClosedRideAssignedData
-    ) => {
-      console.log("Driver App: Bidding closed for ride:", data.rideId);
-      setAvailableRideRequests((prevRequests) =>
-        prevRequests.filter((r) => r.rideId !== data.rideId)
-      );
-      if (selectedRide?.rideId === data.rideId) {
-        setSelectedRide(null);
-        setBidAmount("");
-        setSubmissionStatus(data.message);
-      }
-    };
-
-    const handleRideConfirmedToDriver = (data: RideConfirmedToDriverData) => {
-      console.log("Driver App: Ride confirmed to driver:", data);
-      if (data.message) {
-        setSubmissionStatus(data.message);
-      }
+    if (
+      driverRideState.status === "bid_accepted_starting_ride" &&
+      driverRideState.activeRideId &&
+      driverRideState.activeRideRoomId
+    ) {
+      console.log("Driver App: Ride confirmed via hook state, navigating...");
       router.push({
         pathname: "/DriverActiveRideScreen",
         params: {
-          rideId: data.rideId,
-          active_ride_room_id: data.active_ride_room_id,
-          riderId: data.riderId,
-          rideDetails: JSON.stringify(data.rideDetails || {}),
+          rideId: driverRideState.activeRideId,
+          activeRideRoomId: driverRideState.activeRideRoomId,
         },
       });
-    };
-
-    const handleRideFinalized = (data: RideFinalizedData) => {
-      console.log("Driver App: Ride finalized by server:", data);
-      setSubmissionStatus(data.message);
-      setAvailableRideRequests((prevRequests) =>
-        prevRequests.filter((r) => r.rideId !== data.rideId)
-      );
-      if (selectedRide?.rideId === data.rideId) {
-        setSelectedRide(null);
+    } else if (
+      driverRideState.status === "ride_completed" ||
+      driverRideState.status === "error"
+    ) {
+      if (router.canGoBack()) {
+        // Check if current route is DriverActiveRideScreen to avoid navigating from other screens unnecessarily
+        // This check might be too simplistic depending on your navigation structure.
+        // A more robust way might involve checking the current route name from navigation state if available.
+        // For now, if it can go back and state is completed/error, it implies it might be on active ride screen.
+        // Consider if (currentRouteName === 'DriverActiveRideScreen') router.replace('/(tabs)/');
       }
-    };
+    } else if (driverRideState.status === "bidding_in_progress") {
+      setSubmissionStatus("Submitting bid...");
+      setIsSubmitting(true);
+    } else if (
+      driverRideState.status === "viewing_quotations" &&
+      isSubmitting
+    ) {
+      setIsSubmitting(false);
+    }
+  }, [driverRideState, router, isSubmitting]);
 
-    socketClient.on("new_ride_to_bid_on", handleNewRideToBidOn);
-    socketClient.on("bid_submission_ack", handleBidSubmissionAck);
-    socketClient.on("bid_error", handleBidError);
-    socketClient.on(
-      "bidding_closed_ride_assigned",
-      handleBiddingClosedRideAssigned
-    );
-    socketClient.on("ride_confirmed_to_driver", handleRideConfirmedToDriver);
-    socketClient.on("ride_finalized", handleRideFinalized);
-
-    return () => {
-      socketClient.off("new_ride_to_bid_on", handleNewRideToBidOn);
-      socketClient.off("bid_submission_ack", handleBidSubmissionAck);
-      socketClient.off("bid_error", handleBidError);
-      socketClient.off(
-        "bidding_closed_ride_assigned",
-        handleBiddingClosedRideAssigned
-      );
-      socketClient.off("ride_confirmed_to_driver", handleRideConfirmedToDriver);
-      socketClient.off("ride_finalized", handleRideFinalized);
-    };
-  }, [selectedRide, router]);
-
-  const handleSelectRide = (ride: RideRequest) => {
-    setSelectedRide(ride);
+  const handleSelectRide = (ride: QuotationRequest) => {
+    setSelectedQuotation(ride);
     setBidAmount("");
     setSubmissionStatus("");
   };
 
   const handleSubmitBid = async () => {
-    if (!selectedRide || !bidAmount) {
+    if (!selectedQuotation || !bidAmount) {
       setSubmissionStatus("Please select a ride and enter a bid amount.");
       return;
     }
@@ -213,18 +123,20 @@ export default function DriverDashboardScreen() {
     setIsSubmitting(true);
     setSubmissionStatus("Submitting bid...");
 
-    const bidDetails: DriverBid = {
-      rideId: selectedRide.rideId,
+    const bidPayload: BidSubmitPayload = {
+      quotationRequestId: selectedQuotation.id,
       driverId: socketId,
       bidAmount: numericBidAmount,
+      currency: "USD",
+      estimatedArrivalTime: estimatedArrivalTime,
+      // TODO: Replace hardcoded driver details with actual authenticated driver profile data
+      vehicleDetails: "Toyota Camry - ABC 123",
+      driverName: "John Doe (Driver)",
+      driverRating: 4.8,
     };
 
     try {
-      await submitBid(
-        selectedRide.rideId,
-        selectedRide.bidding_room_id,
-        bidDetails
-      );
+      await submitDriverBid(bidPayload);
     } catch (error) {
       console.error("Driver App: Error in submitBid call:", error);
       setSubmissionStatus(
@@ -236,25 +148,29 @@ export default function DriverDashboardScreen() {
     }
   };
 
-  const renderRideItem = ({ item }: { item: RideRequest }) => {
+  const renderRideItem = ({ item }: { item: QuotationRequest }) => {
     console.log(
-      `Driver App: renderRideItem for rideId ${item.rideId}, Details:`,
-      JSON.stringify(item.rideDetails)
+      `Driver App: renderRideItem for id ${item.id}, Details:`,
+      JSON.stringify(item)
     );
 
-    const { pickupLocation, dropoffLocation, bidAmount } = item.rideDetails;
+    const {
+      pickupLocation,
+      dropoffLocation,
+      userName,
+      requestedAt,
+      fareOffer,
+    } = item;
 
     return (
       <TouchableOpacity
         style={[
           styles.rideItem,
-          selectedRide?.rideId === item.rideId && styles.selectedRideItem,
+          selectedQuotation?.id === item.id && styles.selectedRideItem,
         ]}
         onPress={() => handleSelectRide(item)}
       >
-        <Text style={styles.rideTextBold}>
-          Ride ID: ...{item.rideId.slice(-6)}
-        </Text>
+        <Text style={styles.rideTextBold}>Ride ID: ...{item.id.slice(-6)}</Text>
         <Text style={styles.rideText}>
           Pickup:{" "}
           {pickupLocation?.address
@@ -271,8 +187,16 @@ export default function DriverDashboardScreen() {
             ? "Empty String"
             : "Address Undefined/Missing"}
         </Text>
+        {userName && (
+          <Text style={styles.rideTextSubtle}>Requester: {userName}</Text>
+        )}
+        {fareOffer && (
+          <Text style={styles.rideTextSubtle}>
+            Rider Offer: {fareOffer.amount} {fareOffer.currency}
+          </Text>
+        )}
         <Text style={styles.rideTextSubtle}>
-          Rider's Initial Offer: ${bidAmount?.toFixed(2) || "N/A"}
+          Requested: {new Date(requestedAt).toLocaleTimeString()}
         </Text>
       </TouchableOpacity>
     );
@@ -327,7 +251,7 @@ export default function DriverDashboardScreen() {
           </TouchableOpacity>
         )}
       </View>
-      {availableRideRequests.length === 0 && !selectedRide && (
+      {availableQuotations.length === 0 && !selectedQuotation && (
         <View style={styles.noRidesContainer}>
           <FontAwesome
             name="car"
@@ -346,24 +270,24 @@ export default function DriverDashboardScreen() {
 
   const ListFooter = () => (
     <View style={styles.headerFooterContainer}>
-      {selectedRide && (
+      {selectedQuotation && (
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.bidSectionBox}
         >
           <Text style={styles.selectedRideTitle}>
-            Bidding on Ride: ...{selectedRide.rideId.slice(-6)}
+            Bidding on Ride: ...{selectedQuotation.id.slice(-6)}
           </Text>
           <Text style={styles.detailTextStrong}>
             From:{" "}
-            {selectedRide.rideDetails.pickupLocation?.address
-              ? selectedRide.rideDetails.pickupLocation.address
+            {selectedQuotation.pickupLocation?.address
+              ? selectedQuotation.pickupLocation.address
               : "N/A"}
           </Text>
           <Text style={styles.detailTextStrong}>
             To:{" "}
-            {selectedRide.rideDetails.dropoffLocation?.address
-              ? selectedRide.rideDetails.dropoffLocation.address
+            {selectedQuotation.dropoffLocation?.address
+              ? selectedQuotation.dropoffLocation.address
               : "N/A"}
           </Text>
 
@@ -398,7 +322,7 @@ export default function DriverDashboardScreen() {
               styles.cancelButtonBackground,
               { marginTop: 8 },
             ]}
-            onPress={() => setSelectedRide(null)}
+            onPress={() => setSelectedQuotation(null)}
             disabled={isSubmitting}
           >
             <Text style={styles.buttonTextStyle}>Cancel</Text>
@@ -439,9 +363,9 @@ export default function DriverDashboardScreen() {
   return (
     <View style={styles.mainContainer}>
       <FlatList
-        data={availableRideRequests}
+        data={availableQuotations}
         renderItem={renderRideItem}
-        keyExtractor={(item) => item.rideId}
+        keyExtractor={(item) => item.id}
         ListHeaderComponent={ListHeader}
         ListFooterComponent={ListFooter}
         contentContainerStyle={styles.listLayoutContainer}
