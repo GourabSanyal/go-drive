@@ -7,10 +7,14 @@ import {
   ActivityIndicator,
   Alert,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSocket } from "../src/hooks/useSocket";
 import { primaryColor, errorColor } from "../src/theme/colors";
+import DriverMap from "../components/DriverMap";
+
+const screenHeight = Dimensions.get("window").height;
 
 const DriverActiveRideScreen = () => {
   const router = useRouter();
@@ -238,69 +242,117 @@ const DriverActiveRideScreen = () => {
     isLoading
   );
 
+  // Prepare coordinates for the map
+  const pickupCoords: [number, number] | undefined =
+    confirmedRideDetails?.pickupLocation
+      ? [
+          confirmedRideDetails.pickupLocation.longitude,
+          confirmedRideDetails.pickupLocation.latitude,
+        ]
+      : undefined;
+
+  const dropoffCoords: [number, number] | undefined =
+    confirmedRideDetails?.dropoffLocation
+      ? [
+          confirmedRideDetails.dropoffLocation.longitude,
+          confirmedRideDetails.dropoffLocation.latitude,
+        ]
+      : undefined;
+
+  // TODO: Get actual driver's current location, e.g., from UserLocation component or state
+  // For now, DriverMap's UserLocation component will show the puck.
+  // If you want to pass a specific marker for driver's location:
+  // const [driverCurrentLocation, setDriverCurrentLocation] = useState<[number, number] | undefined>();
+
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Active Ride</Text>
-      <Text style={styles.subtitle}>Ride ID: {rideIdFromParams}</Text>
-
-      <View style={styles.rideInfoContainer}>
-        <Text style={styles.sectionTitle}>Ride Details:</Text>
-        <Text style={styles.infoText}>
-          From: {confirmedRideDetails?.pickupLocation?.address || "N/A"}
-        </Text>
-        <Text style={styles.infoText}>
-          To: {confirmedRideDetails?.dropoffLocation?.address || "N/A"}
-        </Text>
-        <Text style={styles.infoText}>
-          Fare:{" "}
-          {currentRideState.acceptedBid
-            ? `${currentRideState.acceptedBid.amount.toFixed(2)} ${
-                currentRideState.acceptedBid.currency
-              }`
-            : confirmedRideDetails?.fareOffer?.amount
-            ? `${confirmedRideDetails.fareOffer.amount.toFixed(2)} ${
-                confirmedRideDetails.fareOffer.currency
-              }`
-            : "N/A"}
-        </Text>
+    <View style={styles.screenContainer}>
+      <View style={styles.mapContainer}>
+        <DriverMap
+          pickupCoordinates={pickupCoords}
+          destinationCoordinates={dropoffCoords}
+          // driverLocation={driverCurrentLocation} // Pass this if you manage driver's location state here
+          onMapLoaded={() => console.log("DriverActiveRideScreen: Map loaded")}
+        />
       </View>
+      <ScrollView
+        style={styles.detailsScrollViewContainer}
+        contentContainerStyle={styles.scrollContentContainer}
+      >
+        <Text style={styles.title}>Active Ride</Text>
+        <Text style={styles.subtitle}>Ride ID: {rideIdFromParams}</Text>
 
-      {riderInfo && (
         <View style={styles.rideInfoContainer}>
-          <Text style={styles.sectionTitle}>Rider Information:</Text>
-          <Text style={styles.infoText}>Name: {riderInfo.name || "N/A"}</Text>
+          <Text style={styles.sectionTitle}>Ride Details:</Text>
+          <Text style={styles.infoText}>
+            From: {confirmedRideDetails?.pickupLocation?.address || "N/A"}
+          </Text>
+          <Text style={styles.infoText}>
+            To: {confirmedRideDetails?.dropoffLocation?.address || "N/A"}
+          </Text>
+          <Text style={styles.infoText}>
+            Fare:{" "}
+            {currentRideState.acceptedBid
+              ? `${currentRideState.acceptedBid.amount.toFixed(2)} ${
+                  currentRideState.acceptedBid.currency
+                }`
+              : confirmedRideDetails?.fareOffer?.amount
+              ? `${confirmedRideDetails.fareOffer.amount.toFixed(2)} ${
+                  confirmedRideDetails.fareOffer.currency
+                }`
+              : "N/A"}
+          </Text>
         </View>
-      )}
 
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleSendLocation}
-          disabled={
-            !isConnected || currentRideState.status !== "ride_in_progress"
-          }
-        >
-          <Text style={styles.buttonText}>Send Location Update</Text>
-        </TouchableOpacity>
+        {riderInfo && (
+          <View style={styles.rideInfoContainer}>
+            <Text style={styles.sectionTitle}>Rider Information:</Text>
+            <Text style={styles.infoText}>Name: {riderInfo.name || "N/A"}</Text>
+          </View>
+        )}
 
-        <TouchableOpacity
-          style={[styles.button, styles.completeButton]}
-          onPress={handleCompleteRide}
-          disabled={
-            !isConnected || currentRideState.status !== "ride_in_progress"
-          }
-        >
-          <Text style={styles.buttonText}>Complete Ride</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleSendLocation}
+            disabled={
+              !isConnected || currentRideState.status !== "ride_in_progress"
+            }
+          >
+            <Text style={styles.buttonText}>Send Location Update</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.completeButton]}
+            onPress={handleCompleteRide}
+            disabled={
+              !isConnected || currentRideState.status !== "ride_in_progress"
+            }
+          >
+            <Text style={styles.buttonText}>Complete Ride</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  screenContainer: {
     flex: 1,
-    padding: 16,
+    backgroundColor: "#f0f0f0",
+  },
+  mapContainer: {
+    height: screenHeight * 0.4,
+    width: "100%",
+  },
+  detailsScrollViewContainer: {
+    flex: 1,
+  },
+  scrollContentContainer: {
+    padding: 20,
+  },
+  container: {
+    backgroundColor: "#f0f0f0",
   },
   centered: {
     flex: 1,
