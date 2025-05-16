@@ -47,9 +47,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": getUniqueIdentifier(),
-      "jsEngine": "hermes"
+      "jsEngine": "hermes",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -66,7 +68,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.958848343136-65kdcs0qmrn045oblnvetl9h72gqebqt"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

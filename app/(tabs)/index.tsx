@@ -28,6 +28,7 @@ import {
 } from "../../src/theme/colors";
 import { useSocket } from "../../src/hooks/useSocket";
 import { socketClient } from "../../src/services/socket/client/socketClient";
+import { Button } from "react-native";
 
 const MODAL_INFO_TEXT = `When a new ride request is available, it will appear here.
 You can then select a ride and submit your bid.
@@ -54,6 +55,11 @@ export default function DriverDashboardScreen() {
   const [submissionStatus, setSubmissionStatus] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const loginWithGoogle = () => {
+    console.log("Logging in with Google");
+  };
 
   useEffect(() => {
     if (isConnected && socketId) {
@@ -203,6 +209,7 @@ export default function DriverDashboardScreen() {
   };
 
   const ListHeader = () => (
+
     <View style={styles.headerFooterContainer}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Driver Dashboard</Text>
@@ -263,6 +270,7 @@ export default function DriverDashboardScreen() {
           <Text style={styles.noRidesSubText}>
             New requests will appear here automatically.
           </Text>
+          <Button title="Login with Google" onPress={() => {loginWithGoogle()}} />
         </View>
       )}
     </View>

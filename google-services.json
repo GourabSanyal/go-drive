@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "958848343136",
+    "project_id": "stickersmash-b6cd8",
+    "storage_bucket": "stickersmash-b6cd8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:958848343136:android:bfa79aece7bce871a67705",
+        "android_client_info": {
+          "package_name": "com.yourname.stickersmash"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "958848343136-qvt997jbeo3o4j2cv50j8cn7msjc76tu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYYIy5K-JnTMjgG2N1kr7WYXwgL1tQ3K0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "958848343136-qvt997jbeo3o4j2cv50j8cn7msjc76tu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "958848343136-65kdcs0qmrn045oblnvetl9h72gqebqt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yourname.stickersmash"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

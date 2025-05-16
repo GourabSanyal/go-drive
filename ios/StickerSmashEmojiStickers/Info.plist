@@ -34,6 +34,12 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
+          <string>com.googleusercontent.apps.958848343136-65kdcs0qmrn045oblnvetl9h72gqebqt</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
           <string>exp+go-cabs-and-drive</string>
         </array>
       </dict>
