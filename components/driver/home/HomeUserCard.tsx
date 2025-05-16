@@ -6,9 +6,10 @@ import { CommunityStyles } from '../community/styles';
 export interface HomeUserCardProps {
   userImage: string
   rating: number
+  name: string
 }
 
-export default function HomeUserCard({ userImage, rating }: HomeUserCardProps) {
+export default function HomeUserCard({ userImage, rating, name }: HomeUserCardProps) {
   return (
     <View style={styles.userCardContainer}>
       <Image
@@ -18,7 +19,7 @@ export default function HomeUserCard({ userImage, rating }: HomeUserCardProps) {
         source={{ uri: userImage }}
       />
       <View>
-        <CustomText>Arjun Sharma</CustomText>
+        <CustomText>{name}</CustomText>
         <View style={CommunityStyles.ratingContainer}>
           {Array.from({ length: 5 }).map((star, index) => (
             <Text

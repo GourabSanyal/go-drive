@@ -2,6 +2,30 @@ import { Colors } from "@/theme/colors";
 import { StyleSheet } from "react-native";
 import { RFValue } from 'react-native-responsive-fontsize'
 
+export const HomeStyles = StyleSheet.create({
+    noRidesContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        paddingVertical: 40,
+        marginTop: 20,
+        backgroundColor: Colors.background,
+        borderRadius: 12,
+    },
+    noRidesText: {
+        textAlign: "center",
+        fontSize: 19,
+        fontWeight: "600",
+        color: Colors.text,
+    },
+    noRidesSubText: {
+        textAlign: "center",
+        fontSize: 15,
+        color: Colors.text,
+        opacity: 0.9,
+        marginTop: 8,
+    },
+})
+
 export const UpcomingRideStyles = StyleSheet.create({
     container: {
         width: "90%",
@@ -13,16 +37,18 @@ export const UpcomingRideStyles = StyleSheet.create({
         overflow: "hidden"
     },
     upper: {
+        height: "20%",
         backgroundColor: Colors.primary,
         paddingHorizontal: 16,
-        justifyContent: "center"
+        justifyContent: "center",
     },
     middle: {
+        minHeight: "60%",
         backgroundColor: "#202a26",
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
     },
     splineContainer: {
         width: "10%"
@@ -43,6 +69,7 @@ export const UpcomingRideStyles = StyleSheet.create({
         textAlign: "center"
     },
     bottom: {
+        height: "20%",
         backgroundColor: "#202a26",
         paddingHorizontal: 16,
         flexDirection: "row",
@@ -153,11 +180,10 @@ export const modalStyles = StyleSheet.create({
         borderColor: "#fff"
     },
     modalContainer: {
-        height: "50%",
+        height: "52%",
         width: "90%",
         alignSelf: "center",
         backgroundColor: "transparent",
-        
     },
     userCardContainer: {
         flexDirection: "row",

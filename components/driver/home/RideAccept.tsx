@@ -51,6 +51,7 @@ export default function RideAccept() {
                             time='12m'
                         />
                         <HomeUserCard
+                            name='John Doe'
                             rating={4.4}
                             userImage='https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-4.0.3&w=1000&q=80'
                         />
@@ -58,8 +59,8 @@ export default function RideAccept() {
                         <ModalRideDetails
                             showDistance={false}
                             showFare={false}
-                            from='Bangalore Fort, Bangalore, Karnataka, India'
-                            to='Lalbagh Botanical Garden, Bangalore, Karnataka, India'
+                            from={{ latitude: 21.57350, longitude: 21.573356 }}
+                            to={{ latitude: 21.57350, longitude: 21.573356 }}
                         />
                     </View>
                 </BottomSheetView>

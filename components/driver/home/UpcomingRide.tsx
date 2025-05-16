@@ -9,22 +9,22 @@ export default function UpcomingRide() {
         <View style={[CommonStyles.container, { gap: 20 }]}>
             <UpcomingRideBanner
                 time="10:00 am"
-                from="Bangalore Fort, Bangalore Division, Karnataka"
-                to="Lalbagh Botanical Garden"
+                from={{ latitude: 21.57350, longitude: 21.573356 }}
+                to={{ latitude: 21.57350, longitude: 21.573356 }}
                 vehicle="EV"
                 fare={162}
             />
             <UpcomingRideBanner
                 time="10:00 am"
-                from="Bangalore Fort, Bangalore Division, Karnataka"
-                to="Lalbagh Botanical Garden"
+                from={{ latitude: 21.57350, longitude: 21.573356 }}
+                to={{ latitude: 21.57350, longitude: 21.573356 }}
                 vehicle="EV"
                 fare={162}
             />
             <UpcomingRideBanner
                 time="10:00 am"
-                from="Bangalore Fort, Bangalore Division, Karnataka"
-                to="Lalbagh Botanical Garden"
+                from={{ latitude: 21.57350, longitude: 21.573356 }}
+                to={{ latitude: 21.57350, longitude: 21.573356 }}
                 vehicle="EV"
                 fare={162}
             />

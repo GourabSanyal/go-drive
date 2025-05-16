@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider } from '@ui-kitten/components';
 import { PaperProvider } from 'react-native-paper';
+import { SocketProvider } from '@/src/contexts/SocketContext';
 
 export default function _layout() {
 
@@ -42,21 +43,23 @@ export default function _layout() {
     }
 
     return (
-        <ApplicationProvider {...eva} theme={eva.light}>
-            <PaperProvider>
-                <StatusBar
-                    translucent
-                    style='light'
-                />
-                <Stack
-                    screenOptions={{
-                        contentStyle: {
-                            backgroundColor: '#fff'
-                        },
-                        headerShown: false
-                    }}
-                />
-            </PaperProvider>
-        </ApplicationProvider>
+        <SocketProvider>
+            <ApplicationProvider {...eva} theme={eva.light}>
+                <PaperProvider>
+                    <StatusBar
+                        translucent
+                        style='light'
+                    />
+                    <Stack
+                        screenOptions={{
+                            contentStyle: {
+                                backgroundColor: '#fff'
+                            },
+                            headerShown: false
+                        }}
+                    />
+                </PaperProvider>
+            </ApplicationProvider>
+        </SocketProvider>
     )
 }

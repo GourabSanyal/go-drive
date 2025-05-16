@@ -60,7 +60,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "favicon": "./assets/images/icons/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow GoCabs to use your location."
+        }
+      ],
     ],
     "experiments": {
       "typedRoutes": true

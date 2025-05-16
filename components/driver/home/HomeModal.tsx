@@ -1,72 +1,99 @@
 import CustomButton from '@/components/ui/CustomButton';
-import { FC, useState } from 'react';
+import { Dispatch, FC, SetStateAction } from 'react';
 import { Modal, Portal } from 'react-native-paper';
 import { modalStyles as styles } from './styles';
-import { ScrollView, View } from 'react-native';
+import { NativeSyntheticEvent, ScrollView, TextInput, TextInputChangeEventData, View } from 'react-native';
 import HomeUserCard, { HomeUserCardProps } from './HomeUserCard';
 import ModalRideDetails, { ModalRideDetailsProps } from './ModalRideDetails';
 import { useRouter } from 'expo-router';
 import AcceptRejectButtons from './AcceptRejectButtons';
 
-export interface HomeModalProps extends HomeUserCardProps, ModalRideDetailsProps { }
+export interface HomeModalProps extends HomeUserCardProps, ModalRideDetailsProps {
+  showModal?: boolean
+  handleRejectRide: () => void
+  handleSubmitBid: () => void
+  setBidAmount: Dispatch<SetStateAction<string>>
+  bidAmount: string
+  isSubmitting: boolean
+  fare: number
+}
 
 const HomeModal: FC<HomeModalProps> = ({
   rating,
   userImage,
   from,
-  to
+  to,
+  showModal = false,
+  handleRejectRide,
+  handleSubmitBid,
+  name,
+  setBidAmount,
+  bidAmount,
+  isSubmitting,
+  fare
 }) => {
   const router = useRouter()
-  const [visible, setVisible] = useState(false);
 
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
   const handleAcceptRide = () => {
     router.replace("/driver/(home)/ride-accept")
-    hideModal()
+  }
+
+  const handleInputChange = (e: NativeSyntheticEvent<TextInputChangeEventData>) => {
+    setBidAmount(e.nativeEvent.text)
   }
 
   return (
-    <>
-      <Portal>
-        <Modal
-          visible={visible}
-          onDismiss={hideModal}
-          contentContainerStyle={styles.modalContainer}>
-          <ScrollView style={styles.container}>
-            <View style={styles.modalContainer}>
-              <HomeUserCard
-                userImage={userImage}
-                rating={rating}
+    <Portal>
+      <Modal
+        visible={showModal}
+        onDismiss={handleRejectRide}
+        contentContainerStyle={styles.modalContainer}>
+        <ScrollView style={styles.container}>
+          <View style={styles.modalContainer}>
+            <HomeUserCard
+              name={name}
+              userImage={userImage}
+              rating={rating}
+            />
+            <ModalRideDetails
+              from={from}
+              to={to}
+              fare={fare}
+            />
+            <View style={{
+              gap: 10
+            }}>
+              <TextInput
+                onChange={handleInputChange}
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#fff",
+                  borderRadius: 8,
+                  color: "#fff",
+                  paddingHorizontal: 10,
+                  fontFamily: "MontserratMedium"
+                }}
+                placeholderTextColor="#fff"
+                placeholder='Enter your bid amount'
               />
-              <ModalRideDetails
-                from={from}
-                to={to}
-              />
-              <AcceptRejectButtons
-                acceptFn={handleAcceptRide}
-                rejectFn={hideModal}
-                acceptTxt='Accept Ride'
-                rejectTxt='Reject Ride'
-              />
+              <CustomButton
+                disabled={isSubmitting || !bidAmount}
+                onPress={handleSubmitBid}
+                size='small'
+                variant='h8'>
+                Submit your bid
+              </CustomButton>
             </View>
-          </ScrollView>
-        </Modal>
-      </Portal>
-      {/* TODO: Delele this later */}
-      <CustomButton
-        status='danger'
-        style={{ marginTop: 30, position: "absolute", top: 0, right: 0, zIndex: 10 }}
-        onPress={showModal}>
-        Show Modal
-      </CustomButton>
-      <CustomButton
-        status='danger'
-        style={{ marginTop: 30, position: "absolute", top: 80, right: 0, zIndex: 10 }}
-        onPress={() => router.push("/driver/(home)/upcoming-rides")}>
-        Rides Screen
-      </CustomButton>
-    </>
+            <AcceptRejectButtons
+              acceptFn={handleAcceptRide}
+              rejectFn={handleRejectRide}
+              acceptTxt='Accept Ride'
+              rejectTxt='Reject Ride'
+            />
+          </View>
+        </ScrollView>
+      </Modal>
+    </Portal>
   );
 }
 
