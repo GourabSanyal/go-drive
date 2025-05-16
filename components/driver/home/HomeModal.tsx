@@ -73,7 +73,8 @@ const HomeModal: FC<HomeModalProps> = ({
                   borderRadius: 8,
                   color: "#fff",
                   paddingHorizontal: 10,
-                  fontFamily: "MontserratMedium"
+                  fontFamily: "MontserratMedium",
+                  height: 40
                 }}
                 placeholderTextColor="#fff"
                 placeholder='Enter your bid amount'

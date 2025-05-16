@@ -47,7 +47,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": getUniqueIdentifier(),
-      "jsEngine": "hermes"
+      "jsEngine": "hermes",
+      "config": {
+                "googleMapsApiKey": "AIzaSyAmUzAUvJhuMUIk3Dys-q_VU7XzfXTtpEg"
+            }
     },
     "android": {
       "adaptiveIcon": {
@@ -55,7 +58,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         "backgroundColor": "#ffffff"
       },
       "package": getUniqueIdentifier(),
-      "jsEngine": "hermes"
+      "jsEngine": "hermes",
+      "config": {
+                "googleMaps": {
+                    "apiKey": "AIzaSyAmUzAUvJhuMUIk3Dys-q_VU7XzfXTtpEg"
+                }
+            },
     },
     "developmentClient": {
       "silentLaunch": true
@@ -73,13 +81,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           "locationAlwaysAndWhenInUsePermission": "Allow GoCabs to use your location."
         }
       ],
-      [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsVersion": "11.8.0",
-          "RNMapboxMapsDownloadToken": "sk.eyJ1Ijoicm9uaXQtZ2hvc2giLCJhIjoiY21hcXV5bmtsMDRocDJ5czV3dnhobmNldyJ9.9aryxlzwIWSpBgMlmI_Viw"
-        }
-      ]
     ],
     "experiments": {
       "typedRoutes": true

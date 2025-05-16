@@ -12,9 +12,6 @@ import CallMsgButtons from './CallMsgButtons';
 import { Colors } from '@/theme/colors';
 import Map from './Map';
 import PaymentReceived from './PaymentReceived';
-import Mapbox from '@rnmapbox/maps';
-
-Mapbox.setAccessToken('pk.eyJ1Ijoicm9uaXQtZ2hvc2giLCJhIjoiY21hcXV1NHIzMDRidzJrc2ZyaXBydzVicyJ9.3AOl4Z8OgeNXq2On3wKgBw');
 
 interface DriverAppRideState {
     activeRideId?: string;
@@ -28,9 +25,20 @@ interface DriverAppRideState {
     | "ride_completed"
     | "error";
     errorMessage?: string;
-    confirmedRideDetails?: any;
     riderInfo?: any;
     acceptedBid?: { amount: number; currency: string };
+    confirmedRideDetails: {
+        riderId: string
+        pickupLocation: LocationTypes
+        dropoffLocation: LocationTypes
+        requestedAt: string
+    }
+}
+
+interface LocationTypes {
+    latitude: number
+    longitude: number
+    address: string
 }
 
 export default function RideAccept({
@@ -46,8 +54,8 @@ export default function RideAccept({
     const [rideStarted, setRideStarted] = useState(false)
     const [rideCompleted, setRideCompleted] = useState(false)
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const [from, setFrom] = useState<string>("")
-    const [to, setTo] = useState<string>("")
+    const [from, setFrom] = useState<LocationTypes>()
+    const [to, setTo] = useState<LocationTypes>()
     const [distance, setDistance] = useState<string>()
     const [error, setError] = useState<string>("")
 
@@ -87,13 +95,11 @@ export default function RideAccept({
 
     useEffect(() => {
         if (driverRideState.activeRideId === rideId) {
-            // @ts-ignore
             setFrom(driverRideState.confirmedRideDetails.pickupLocation)
             console.log(driverRideState.confirmedRideDetails.pickupLocation)
-            // @ts-ignore
             setTo(driverRideState.confirmedRideDetails.dropoffLocation)
-
-            const { meters, kilometers } = getDistance(// @ts-ignore
+            if (!from || !to) return
+            const { meters, kilometers } = getDistance(
                 from.latitude, from.longitude, to.latitude, to.longitude
             )
 
@@ -103,12 +109,7 @@ export default function RideAccept({
 
     return (
         <GestureHandlerRootView style={styles.container}>
-            {/* <Map /> */}
-            <View style={cstyles.page}>
-                <View style={cstyles.container}>
-                    <Mapbox.MapView style={cstyles.map} />
-                </View>
-            </View>
+            <Map />
             <BottomSheet
                 handleStyle={styles.handle}
                 handleIndicatorStyle={{ backgroundColor: Colors.text }}
@@ -122,8 +123,7 @@ export default function RideAccept({
                     />}
                     <View style={modalStyles.modalContainer}>
                         <RideAcceptDetails
-                            // @ts-ignore
-                            distance={distance}
+                            distance={distance!}
                             time='1200m'
                         />
                         <HomeUserCard
@@ -133,13 +133,11 @@ export default function RideAccept({
                         />
                         <CallMsgButtons />
                         <ModalRideDetails
-                            fare={162}
+                            fare={driverRideState.acceptedBid?.amount!}
                             showDistance={false}
                             showFare={false}
-                            // @ts-ignore
-                            from={from}
-                            // @ts-ignore
-                            to={to}
+                            from={from!}
+                            to={to!}
                         />
                     </View>
                 </BottomSheetView>

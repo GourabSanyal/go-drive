@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { View, Alert } from 'react-native'
 import { locationStyles as styles } from './styles';
 import MapView, { Marker, MapPressEvent, Region } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { customMapStyle, indiaIntialRegion } from './CustomMap';
 
-export default function Map() {
+const Map = () => {
+    const mapRef = useRef<MapView>(null)
     const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
     const [lng, setLng] = useState<number>()
     const [lat, setLat] = useState<number>()
@@ -53,10 +55,24 @@ export default function Map() {
         <View style={styles.mapContainer}>
             {region && (
                 <MapView
+                    maxZoomLevel={16}
+                    minZoomLevel={12}
+                    pitchEnabled={false}
+                    provider='google'
+                    showsMyLocationButton={false}
+                    showsCompass={false}
+                    showsIndoors={false}
+                    showsIndoorLevelPicker={false}
+                    showsTraffic={false}
+                    showsScale={false}
+                    showsBuildings={false}
+                    showsPointsOfInterest={false}
+                    customMapStyle={customMapStyle}
+                    showsUserLocation={false}
+                    ref={mapRef}
                     style={styles.map}
-                    initialRegion={region}
-                    onPress={handleMapPress}
-                >
+                    initialRegion={indiaIntialRegion}
+                    onPress={handleMapPress}>
                     {location && (
                         <Marker
                             draggable
@@ -69,3 +85,5 @@ export default function Map() {
         </View>
     )
 }
+
+export default memo(Map)

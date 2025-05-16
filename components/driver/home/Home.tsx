@@ -1,18 +1,13 @@
 import { CommonStyles } from '../styles'
 import { HomeStyles as styles } from './styles'
 import UpcomingRideBanner from './UpcomingRideBanner'
-import QuickActionGrid from './QuickActionGrid'
-import LocationPicker from './LocationPicker'
-import { Alert, FlatList, Platform, StyleSheet, View } from 'react-native'
+import { Alert, FlatList, View } from 'react-native'
 import { RelativePathString, useRouter } from 'expo-router'
 import { useSocket } from '@/src/hooks/useSocket'
 import { useEffect, useState } from 'react'
 import { QuotationRequest } from '@/src/types/quotation.types'
 import { BidSubmitPayload } from '@/src/types/bid.types'
-import { FontAwesome } from '@expo/vector-icons'
 import CustomText from '@/components/ui/CustomText'
-import { Colors } from '@/theme/colors'
-import CustomButton from '@/components/ui/CustomButton'
 import HomeModal from './HomeModal'
 import * as Location from "expo-location"
 
@@ -28,8 +23,6 @@ export default function Home() {
     driverRideState,
     sendLocation
   } = useSocket();
-
-  console.log("Available quotes 💡💡💡💡💡💡💡", JSON.stringify(availableQuotations))
 
   const [selectedQuotation, setSelectedQuotation] = useState<QuotationRequest | null>(null);
   const [bidAmount, setBidAmount] = useState<string>("");
@@ -174,7 +167,6 @@ export default function Home() {
                   // FIXME: There's no vehicle type in the payload
                   vehicle={item.vehicleType}
                   // FIXME: add bidAmount in QuotationRequest type
-                  // @ts-ignore
                   fare={item.bidAmount}
                 />
               </View>
@@ -184,7 +176,6 @@ export default function Home() {
       <HomeModal
         submissionStatus={submissionStatus}
         // FIXME: add bidAmount in QuotationRequest type
-        // @ts-ignore
         fare={selectedQuotation?.bidAmount}
         setBidAmount={setBidAmount}
         bidAmount={bidAmount}

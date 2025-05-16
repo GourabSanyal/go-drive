@@ -8,8 +8,8 @@ export default function Index() {
     const router = useRouter();
     useEffect(() => {
         setTimeout(() => {
-            // router.replace("/driver/home"); // DELETE THIS AND ↓
-            router.replace("/onboarding/screen1"); // COMMENT THIS OUT
+            router.replace("/driver/home"); // DELETE THIS AND ↓
+            // router.replace("/onboarding/screen1"); // COMMENT THIS OUT
         }, 1000);
     });
 
