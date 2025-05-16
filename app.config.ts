@@ -66,7 +66,20 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow GoCabs to use your location."
+        }
+      ],
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsVersion": "11.8.0",
+          "RNMapboxMapsDownloadToken": "sk.eyJ1Ijoicm9uaXQtZ2hvc2giLCJhIjoiY21hcXV5bmtsMDRocDJ5czV3dnhobmNldyJ9.9aryxlzwIWSpBgMlmI_Viw"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
