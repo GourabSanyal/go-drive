@@ -1,5 +1,53 @@
-# go-drive
-Driver application for GoCabs
+# 🚘 Go Cabs Driver App
+
+This is the **Driver App** for Go Cabs — the decentralized ride-hailing platform built on sustainability, transparency, and fair economics. It empowers EV drivers with full control of their income, direct rider interactions, and zero platform commissions.
+
+---
+## Rider app repository : https://github.com/codewithnazim/go-cabs-native
+
+# 🌟 Key Features
+
+- 📲 **Live Ride Requests**  
+  Receive incoming ride requests in real-time with route, distance, and rider info.
+
+- 💬 **Fare Negotiation**  
+  Set your own price or counter rider offers through an in-app bid system.
+
+- 👥 **Community Page**  
+  Access community insights and rider reviews — build your reputation on-chain.
+
+- 💰 **Earnings Dashboard**  
+  Track daily, weekly, and all-time earnings, transparently and commission-free.
+
+- 🛻 **Vehicle & Profile Info**  
+  Manage your EV details, licenses, and ID credentials in one clean dashboard.
+
+---
+
+# ⚙️ Tech Stack
+
+| Tech                      | Purpose                           |
+|---------------------------|-----------------------------------|
+| React Native + TypeScript | Mobile app for drivers            |
+| Firebase Auth             | Secure login                      |
+| Firebase Realtime DB      | Live request syncing              |
+| Socket.IO                 | Real-time rider-driver matching   |
+| Mapbox API                | Location input & mapping          |
+| Anchor                    | On-chain escrow wallet (Solana)   |
+| OpenCharge API            | EV charging station locator       |
+
+---
+
+📱 Live Demo 
+🎥 Watch the full App demo on YouTube:  
+[![Watch Now](https://www.youtube.com/watch?v=E5tLv4YkVqs&t=3s/hqdefault.jpg)](https://www.youtube.com/watch?v=E5tLv4YkVqs&t=3s)  
+🔗 [Click here to watch](https://www.youtube.com/watch?v=E5tLv4YkVqs&t=3s)
+
+- Waitlist: Join Now at https://www.gocabs.xyz/
+
+- Telegram Community: https://t.me/GoCabsTG
+
+# 🚀 Getting Started (For Developers)
 
 1. Use node version: `LTS 22.11.0`
 2. yarn version: `4.5.3 or >= 4`
