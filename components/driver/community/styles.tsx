@@ -61,7 +61,7 @@ export const CommunityStyles = StyleSheet.create({
         marginBottom: 12,
     },
     bioText: {
-        lineHeight: 20,
+        // lineHeight: 20,
         color: 'white',
     },
     hashtagText: {

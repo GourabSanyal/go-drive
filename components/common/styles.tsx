@@ -1,19 +1,20 @@
 import { Colors } from "@/theme/colors"
-import { StyleSheet } from "react-native"
+import { StyleSheet, Platform } from "react-native"
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen'
 
-export const HeaderStyles = StyleSheet.create({
+export const HeaderStyles = {
     container: {
         backgroundColor: Colors.background,
         alignItems: "center",
         justifyContent: "space-between",
         paddingHorizontal: 24,
-        paddingTop: 12,
+        paddingTop: Platform.OS === 'ios' ? hp(7) : hp(5),
         paddingBottom: 16,
         flexDirection: "row",
         borderBottomWidth: 1,
         borderBottomColor: "#353f3b"
     }
-})
+}
 
 export const CustomSwitchStyles = StyleSheet.create({
     container: {

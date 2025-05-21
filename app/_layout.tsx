@@ -7,6 +7,7 @@ import * as eva from '@eva-design/eva';
 import { ApplicationProvider } from '@ui-kitten/components';
 import { PaperProvider } from 'react-native-paper';
 import { SocketProvider } from '@/src/contexts/SocketContext';
+import { Colors } from '@/theme/colors';
 
 export default function _layout() {
 
@@ -47,7 +48,7 @@ export default function _layout() {
             <ApplicationProvider {...eva} theme={eva.light}>
                 <PaperProvider>
                     <StatusBar
-                        translucent
+                        backgroundColor={Colors.background}
                         style='light'
                     />
                     <Stack
@@ -55,7 +56,7 @@ export default function _layout() {
                             contentStyle: {
                                 backgroundColor: '#fff'
                             },
-                            headerShown: false
+                            headerShown: false,
                         }}
                     />
                 </PaperProvider>

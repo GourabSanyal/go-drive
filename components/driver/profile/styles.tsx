@@ -52,10 +52,12 @@ export const balanceCardStyles = StyleSheet.create({
     card: {
         borderRadius: 20,
         paddingVertical: 20,
-        maxWidth: 400,
+        maxWidth: 550,
         borderWidth: 1,
         borderColor: '#fff',
-        marginVertical: 20
+        marginVertical: 20,
+        alignSelf: "center"
+
     },
     balanceContainer: {
         alignItems: 'center',
