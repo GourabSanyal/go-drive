@@ -12,4 +12,15 @@ config.resolver.alias = {
   '@utils': path.resolve(__dirname, 'src/utils')
 };
 
+const { transformer, resolver } = config;
+config.transformer = {
+    ...transformer,
+    babelTransformerPath: require.resolve("react-native-svg-transformer/expo"),
+  };
+  config.resolver = {
+    ...resolver,
+    assetExts: resolver.assetExts.filter((ext) => ext !== "svg"),
+    sourceExts: [...resolver.sourceExts, "svg"],
+  };
+
 module.exports = config;

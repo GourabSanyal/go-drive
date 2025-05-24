@@ -1,71 +1,66 @@
-import "expo-dev-client";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import "react-native-reanimated";
+import { Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
+import { useFonts } from 'expo-font'
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider } from '@ui-kitten/components';
+import { PaperProvider } from 'react-native-paper';
+import { SocketProvider } from '@/src/contexts/SocketContext';
+import { Colors } from '@/theme/colors';
 
-import { useColorScheme } from "@/components/useColorScheme";
-import { SocketProvider } from "../src/contexts/SocketContext";
+export default function _layout() {
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from "expo-router";
+    const [loaded, error] = useFonts({
+        "MontserratBlack": require("../assets/fonts/Montserrat-Black.ttf"),
+        "MontserratBlackItalic": require("../assets/fonts/Montserrat-BlackItalic.ttf"),
+        "MontserratBold": require("../assets/fonts/Montserrat-Bold.ttf"),
+        "MontserratBoldItalic": require("../assets/fonts/Montserrat-BoldItalic.ttf"),
+        "MontserratExtraBold": require("../assets/fonts/Montserrat-ExtraBold.ttf"),
+        "MontserratExtraBoldItalic": require("../assets/fonts/Montserrat-ExtraBoldItalic.ttf"),
+        "MontserratExtraLight": require("../assets/fonts/Montserrat-ExtraLight.ttf"),
+        "MontserratExtraLightItalic": require("../assets/fonts/Montserrat-ExtraLightItalic.ttf"),
+        "MontserratItalic": require("../assets/fonts/Montserrat-Italic.ttf"),
+        "MontserratLight": require("../assets/fonts/Montserrat-Light.ttf"),
+        "MontserratLightItalic": require("../assets/fonts/Montserrat-LightItalic.ttf"),
+        "MontserratMedium": require("../assets/fonts/Montserrat-Medium.ttf"),
+        "MontserratMediumItalic": require("../assets/fonts/Montserrat-MediumItalic.ttf"),
+        "MontserratRegular": require("../assets/fonts/Montserrat-Regular.ttf"),
+        "MontserratSemiBold": require("../assets/fonts/Montserrat-SemiBold.ttf"),
+        "MontserratSemiBoldItalic": require("../assets/fonts/Montserrat-SemiBoldItalic.ttf"),
+        "MontserratThin": require("../assets/fonts/Montserrat-Thin.ttf"),
+        "MontserratThinItalic": require("../assets/fonts/Montserrat-ThinItalic.ttf"),
+    });
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
-};
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+    useEffect(() => {
+        if (loaded || error) {
+            SplashScreen.hideAsync();
+        }
+    }, [loaded, error]);
 
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-    ...FontAwesome.font,
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    if (!loaded && !error) {
+        return null;
     }
-  }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <SocketProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-          <Stack.Screen
-            name="DriverActiveRideScreen"
-            options={{ title: "Active Ride" }}
-          />
-        </Stack>
-      </ThemeProvider>
-    </SocketProvider>
-  );
+    return (
+        <SocketProvider>
+            <ApplicationProvider {...eva} theme={eva.light}>
+                <PaperProvider>
+                    <StatusBar
+                        backgroundColor={Colors.background}
+                        style='light'
+                    />
+                    <Stack
+                        screenOptions={{
+                            contentStyle: {
+                                backgroundColor: '#fff'
+                            },
+                            headerShown: false,
+                        }}
+                    />
+                </PaperProvider>
+            </ApplicationProvider>
+        </SocketProvider>
+    )
 }
