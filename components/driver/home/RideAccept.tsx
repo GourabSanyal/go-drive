@@ -1,22 +1,23 @@
-import { modalStyles, RideAcceptStyles as styles } from './styles'
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import HomeUserCard from './HomeUserCard';
-import ModalRideDetails from './ModalRideDetails';
-import AcceptRejectButtons from './AcceptRejectButtons';
-import { useRouter } from 'expo-router';
-import RideAcceptDetails from './RideAcceptDetails';
-import CallMsgButtons from './CallMsgButtons';
-import { Colors } from '@/theme/colors';
-import Map from './Map';
-import PaymentReceived from './PaymentReceived';
+import { modalStyles, RideAcceptStyles as styles } from "./styles";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { StyleSheet, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import HomeUserCard from "./HomeUserCard";
+import ModalRideDetails from "./ModalRideDetails";
+import AcceptRejectButtons from "./AcceptRejectButtons";
+import { useRouter } from "expo-router";
+import RideAcceptDetails from "./RideAcceptDetails";
+import CallMsgButtons from "./CallMsgButtons";
+import { Colors } from "@/theme/colors";
+import Map from "./Map";
+import PaymentReceived from "./PaymentReceived";
+import CustomText from "@/components/ui/CustomText";
 
 interface DriverAppRideState {
-    activeRideId?: string;
-    activeRideRoomId?: string;
-    status:
+  activeRideId?: string;
+  activeRideRoomId?: string;
+  status:
     | "idle"
     | "viewing_quotations"
     | "bidding_in_progress"
@@ -24,177 +25,206 @@ interface DriverAppRideState {
     | "ride_in_progress"
     | "ride_completed"
     | "error";
-    errorMessage?: string;
-    riderInfo?: any;
-    acceptedBid?: { amount: number; currency: string };
-    confirmedRideDetails: {
-        riderId: string
-        pickupLocation: LocationTypes
-        dropoffLocation: LocationTypes
-        requestedAt: string
-    }
+  errorMessage?: string;
+  riderInfo?: any;
+  acceptedBid?: { amount: number; currency: string };
+  confirmedRideDetails: {
+    riderId: string;
+    pickupLocation: LocationTypes;
+    dropoffLocation: LocationTypes;
+    requestedAt: string;
+  };
 }
 
 interface LocationTypes {
-    latitude: number
-    longitude: number
-    address: string
+  latitude: number;
+  longitude: number;
+  address: string;
 }
 
 export default function RideAccept({
-    rideId,
-    activeRideRoomId,
-    driverRideState
+  rideId,
+  activeRideRoomId,
+  driverRideState,
 }: {
-    rideId: string | string[]
-    activeRideRoomId: string | string[]
-    driverRideState: DriverAppRideState
+  rideId: string | string[];
+  activeRideRoomId: string | string[];
+  driverRideState: DriverAppRideState;
 }) {
-    const router = useRouter()
-    const [rideStarted, setRideStarted] = useState(false)
-    const [rideCompleted, setRideCompleted] = useState(false)
-    const bottomSheetRef = useRef<BottomSheet>(null);
-    const [from, setFrom] = useState<LocationTypes>()
-    const [to, setTo] = useState<LocationTypes>()
-    const [distance, setDistance] = useState<string>()
-    const [error, setError] = useState<string>("")
+  const router = useRouter();
+  const [rideStarted, setRideStarted] = useState(false);
+  const [rideCompleted, setRideCompleted] = useState(false);
+  const bottomSheetRef = useRef<BottomSheet>(null);
 
-    const handleSheetChanges = useCallback((index: number) => { }, []);
+  const handleSheetChanges = useCallback((index: number) => {}, []);
 
-    const handleAcceptRide = () => setRideStarted(true)
-    const handleEndRide = () => {
-        if (rideStarted) {
-            setRideCompleted(true)
-        }
+  const handleAcceptRide = () => setRideStarted(true);
+  const handleEndRide = () => {
+    if (rideStarted) {
+      setRideCompleted(true);
     }
-    const handleFinishRide = () => router.navigate("/driver/(tabs)/home")
+  };
+  const handleFinishRide = () => router.navigate("/driver/(tabs)/home");
 
-    function deg2rad(deg: number) {
-        return deg * (Math.PI / 180);
+  function deg2rad(deg: number) {
+    return deg * (Math.PI / 180);
+  }
+
+  function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+    const R = 6371; // Radius of the Earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) *
+        Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distanceKm = R * c;
+    const distanceMeters = distanceKm * 1000;
+
+    return {
+      kilometers: distanceKm,
+      meters: distanceMeters,
+    };
+  }
+
+  const calculatedDistance = useMemo(() => {
+    if (
+      driverRideState.status === "bid_accepted_starting_ride" &&
+      driverRideState.confirmedRideDetails?.pickupLocation &&
+      driverRideState.confirmedRideDetails?.dropoffLocation
+    ) {
+      const fromLoc = driverRideState.confirmedRideDetails.pickupLocation;
+      const toLoc = driverRideState.confirmedRideDetails.dropoffLocation;
+      const { meters, kilometers } = getDistance(
+        fromLoc.latitude,
+        fromLoc.longitude,
+        toLoc.latitude,
+        toLoc.longitude
+      );
+      return meters < 1000
+        ? meters.toFixed(0) + " m"
+        : kilometers.toFixed(2) + " km";
     }
+    return "Calculating...";
+  }, [driverRideState]);
 
-    function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
-        const R = 6371; // Radius of the Earth in km
-        const dLat = deg2rad(lat2 - lat1);
-        const dLon = deg2rad(lon2 - lon1);
-
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distanceKm = R * c;
-        const distanceMeters = distanceKm * 1000;
-
-        return {
-            kilometers: distanceKm,
-            meters: distanceMeters
-        };
+  useEffect(() => {
+    if (driverRideState.confirmedRideDetails) {
+      console.log(
+        "RideAccept confirmedPickup:",
+        driverRideState.confirmedRideDetails.pickupLocation
+      );
+      console.log(
+        "RideAccept confirmedDropoff:",
+        driverRideState.confirmedRideDetails.dropoffLocation
+      );
     }
+  }, [driverRideState]);
 
-    useEffect(() => {
-        if (driverRideState.activeRideId === rideId) {
-            setFrom(driverRideState.confirmedRideDetails.pickupLocation)
-            console.log(driverRideState.confirmedRideDetails.pickupLocation)
-            setTo(driverRideState.confirmedRideDetails.dropoffLocation)
-            if (!from || !to) return
-            const { meters, kilometers } = getDistance(
-                from.latitude, from.longitude, to.latitude, to.longitude
-            )
+  const pickupLocationDetails =
+    driverRideState.confirmedRideDetails?.pickupLocation;
+  const dropoffLocationDetails =
+    driverRideState.confirmedRideDetails?.dropoffLocation;
 
-            meters < 1000 ? setDistance(meters.toFixed(2) + " m") : setDistance(kilometers.toFixed(2) + " km")
-        }
-    }, [driverRideState])
+  const pickupCoords: [number, number] | undefined = pickupLocationDetails
+    ? [pickupLocationDetails.longitude, pickupLocationDetails.latitude]
+    : undefined;
 
-    const pickupCoords: [number, number] | undefined =
-        driverRideState.confirmedRideDetails?.pickupLocation
-            ? [
-                driverRideState.confirmedRideDetails.pickupLocation.longitude,
-                driverRideState.confirmedRideDetails.pickupLocation.latitude,
-            ]
-            : undefined;
+  const dropoffCoords: [number, number] | undefined = dropoffLocationDetails
+    ? [dropoffLocationDetails.longitude, dropoffLocationDetails.latitude]
+    : undefined;
 
-    const dropoffCoords: [number, number] | undefined =
-        driverRideState.confirmedRideDetails?.dropoffLocation
-            ? [
-                driverRideState.confirmedRideDetails.dropoffLocation.longitude,
-                driverRideState.confirmedRideDetails.dropoffLocation.latitude,
-            ]
-            : undefined;
-
+  if (!pickupLocationDetails || !dropoffLocationDetails) {
     return (
-        <GestureHandlerRootView style={styles.container}>
-            <Map
-                pickupCoordinates={pickupCoords}
-                destinationCoordinates={dropoffCoords}
-                // driverLocation={ }
-                onMapLoaded={() => console.log("DriverActiveRideScreen: Map loaded")}
+      <View style={styles.container}>
+        <CustomText>Loading ride details...</CustomText>
+      </View>
+    );
+  }
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <Map
+        pickupCoordinates={pickupCoords}
+        destinationCoordinates={dropoffCoords}
+        onMapLoaded={() => console.log("DriverActiveRideScreen: Map loaded")}
+      />
+      <BottomSheet
+        handleStyle={styles.handle}
+        handleIndicatorStyle={{ backgroundColor: Colors.text }}
+        snapPoints={rideCompleted ? ["35%", "100%"] : ["30%", "60%", "100%"]}
+        ref={bottomSheetRef}
+        onChange={handleSheetChanges}
+      >
+        <BottomSheetView style={styles.contentContainer}>
+          {rideCompleted && (
+            <PaymentReceived
+              amount={driverRideState.acceptedBid?.amount || 0}
+              paymentMethod="Solana Pay"
             />
-            <BottomSheet
-                handleStyle={styles.handle}
-                handleIndicatorStyle={{ backgroundColor: Colors.text }}
-                snapPoints={rideCompleted ? ["35%", "100%"] : ["30%", '60%', '100%']}
-                ref={bottomSheetRef}
-                onChange={handleSheetChanges}>
-                <BottomSheetView style={styles.contentContainer}>
-                    {rideCompleted && <PaymentReceived
-                        amount={142}
-                        paymentMethod='MetaMask'
-                    />}
-                    <View style={modalStyles.modalContainer}>
-                        <RideAcceptDetails
-                            distance={distance!}
-                            time='1200m'
-                        />
-                        <HomeUserCard
-                            name='John Doe'
-                            rating={4.4}
-                            userImage='https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-4.0.3&w=1000&q=80'
-                        />
-                        <CallMsgButtons />
-                        <ModalRideDetails
-                            fare={driverRideState.acceptedBid?.amount!}
-                            showDistance={false}
-                            showFare={false}
-                            from={from!}
-                            to={to!}
-                        />
-                    </View>
-                </BottomSheetView>
-            </BottomSheet>
-            <View style={styles.buttons}>
-                {!rideCompleted ?
-                    <AcceptRejectButtons
-                        showEndRide={rideStarted}
-                        rejectFn={handleEndRide}
-                        acceptFn={handleAcceptRide}
-                        acceptTxt='Start ride'
-                        rejectTxt='End ride'
-                    /> :
-                    <AcceptRejectButtons
-                        showEndRide={rideStarted}
-                        rejectFn={handleFinishRide}
-                        acceptTxt=''
-                        rejectTxt='Finish ride'
-                    />
-                }
-            </View>
-        </GestureHandlerRootView>
-    )
+          )}
+          <View style={modalStyles.modalContainer}>
+            <RideAcceptDetails
+              distance={calculatedDistance}
+              time="Calculating..."
+            />
+            <HomeUserCard
+              name={driverRideState.riderInfo?.name || "Rider"}
+              rating={driverRideState.riderInfo?.rating || 4.5}
+              userImage={
+                driverRideState.riderInfo?.userImage ||
+                "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-4.0.3&w=1000&q=80"
+              }
+            />
+            <CallMsgButtons />
+            <ModalRideDetails
+              fare={driverRideState.acceptedBid?.amount!}
+              showDistance={false}
+              showFare={true}
+              from={pickupLocationDetails}
+              to={dropoffLocationDetails}
+            />
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
+      <View style={styles.buttons}>
+        {!rideCompleted ? (
+          <AcceptRejectButtons
+            showEndRide={rideStarted}
+            rejectFn={handleEndRide}
+            acceptFn={handleAcceptRide}
+            acceptTxt={rideStarted ? "END RIDE" : "START RIDE"}
+            rejectTxt={rideStarted ? "CANCEL (not implemented)" : "REJECT RIDE"}
+          />
+        ) : (
+          <AcceptRejectButtons
+            showEndRide={false}
+            rejectFn={handleFinishRide}
+            acceptTxt=""
+            rejectTxt="FINISH & GO HOME"
+          />
+        )}
+      </View>
+    </GestureHandlerRootView>
+  );
 }
 
 const cstyles = StyleSheet.create({
-    page: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    container: {
-        height: 300,
-        width: 300,
-    },
-    map: {
-        flex: 1
-    }
+  page: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
+    height: 300,
+    width: 300,
+  },
+  map: {
+    flex: 1,
+  },
 });
