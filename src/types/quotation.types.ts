@@ -29,5 +29,6 @@ export interface QuotationRequest {
   };
   preferredPaymentMethod?: "metamask" | "credit" | "debit" | "cash";
   vehicleType?: string;
+  bidAmount?: number
   // Any other details from the original QuotationRequestPayload relevant to driver
 }

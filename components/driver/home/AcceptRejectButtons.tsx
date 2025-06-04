@@ -10,7 +10,7 @@ export default function AcceptRejectButtons({ acceptFn,
 }: {
     acceptFn?: () => void
     rejectFn?: () => void
-    acceptTxt: string
+    acceptTxt?: string
     rejectTxt: string
     showEndRide?: boolean
 }) {

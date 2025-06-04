@@ -7,13 +7,119 @@ import FacebookIcon from '@/assets/images/auth/facebook.svg';
 import AppleIcon from '@/assets/images/auth/apple.svg';
 import CustomButton from '@/components/ui/CustomButton';
 import { Colors } from '@/theme/colors';
-import { useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { useRouter, useSegments } from 'expo-router';
+import {
+    GoogleAuthProvider,
+    getAuth,
+    signInWithCredential,
+    signInWithPhoneNumber
+} from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {
+    addDoc,
+    collection,
+    getDocs,
+    getFirestore,
+    query,
+    where
+} from '@react-native-firebase/firestore';
+import { storage } from '@/src/utils/storage/mmkv';
 
 const Signup = () => {
     const router = useRouter()
+    const segments = useSegments()
+    const db = getFirestore()
     const [value, setValue] = useState('');
     const [checked, setChecked] = useState(true);
+    // If null, no SMS has been sent
+    const [confirm, setConfirm] = useState<any | null>(null);
+    // verification code (OTP - One-Time-Passcode)
+    const [code, setCode] = useState('');
+    // Set an initializing state whilst Firebase connects
+
+    // Handle the button press
+    async function handleSignInWithPhoneNumber(phoneNumber: string) {
+        try {
+            const confirmation = await signInWithPhoneNumber(getAuth(), `+91${phoneNumber}`);
+            setConfirm(confirmation);
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    async function confirmCode() {
+        try {
+            await confirm!.confirm(code);
+        } catch (error) {
+            console.error('Invalid code');
+        }
+    }
+
+    async function onGoogleButtonPress() {
+        try {
+            // Check if your device supports Google Play
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+            // Get the users ID token
+            const signInResult = await GoogleSignin.signIn();
+            const email = signInResult.data?.user.email
+            const photo = signInResult.data?.user.photo
+            const name = signInResult.data?.user.name
+            const userId = signInResult.data?.user.id
+            // Try the new style of google-sign in result, from v13+ of that module
+            let idToken = signInResult.data?.idToken;
+            if (!idToken) {
+                // if you are using older versions of google-signin, try old style result
+                idToken = signInResult.data?.idToken;
+            }
+            if (!idToken || !name || !userId) {
+                throw new Error('No ID token & name found');
+            }
+
+            storage.set("idToken", idToken)
+            storage.set("name", name)
+            storage.set("userId", userId)
+
+            const existingUser = await getDocs(
+                query(
+                    collection(db, 'drivers'),
+                    where('email', '==', email)
+                )
+            )
+            // Create user if not exists
+            if (!existingUser.docs[0]) {
+                await addDoc(collection(db, 'drivers'), { name, email, photo })
+            }
+            // Create a Google credential with the token
+            const googleCredential = GoogleAuthProvider.credential(signInResult.data!.idToken);
+            // Sign-in the user with the credential
+            return signInWithCredential(getAuth(), googleCredential);
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+
+    // async function onFacebookButtonPress() {
+    //     // Attempt login with permissions
+    //     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+
+    //     if (result.isCancelled) {
+    //         throw 'User cancelled the login process';
+    //     }
+    //     // Once signed in, get the users AccessToken
+    //     const data = await AccessToken.getCurrentAccessToken();
+
+    //     if (!data) {
+    //         throw 'Something went wrong obtaining access token';
+    //     }
+
+    //     // Create a Firebase credential with the AccessToken
+    //     const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
+
+    //     // Sign-in the user with the credential
+    //     return signInWithCredential(getAuth(), facebookCredential);
+    // }
 
     return (
         <View style={styles.container}>
@@ -42,7 +148,12 @@ const Signup = () => {
             </View>
             <Margin margin={30} />
             <CustomButton
-                onPress={() => router.push("/auth/otp")}
+                // disabled={!value || value.length == 0}
+                onPress={() => {
+                    router.push("/auth/otp")
+                    handleSignInWithPhoneNumber(value)
+                }
+                }
                 status="primary">
                 Signup
             </CustomButton>
@@ -57,13 +168,17 @@ const Signup = () => {
                 Sign Up with
             </Text>
             <View style={styles.social}>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => onGoogleButtonPress().then(() => router.replace("/driver/home"))}
+                    activeOpacity={0.95}>
                     <GoogleIcon width={50} height={50} />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.95}>
                     <FacebookIcon width={50} height={50} />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    activeOpacity={0.95}>
                     <AppleIcon width={50} height={50} />
                 </TouchableOpacity>
             </View>
@@ -75,7 +190,6 @@ const Signup = () => {
                     Log In
                 </Text>
             </Text>
-            {/* onPress={() => navigation.navigate('OnboardingScreens', { screen: 'Screen1' })} */}
         </View >
     );
 };

@@ -171,15 +171,14 @@ export default function ModalRideDetails({
 
   return (
     <>
-      {showFare ||
         (fare && (
           <View style={styles.cardDetails}>
             <CustomText variant="h7">Estimated fare</CustomText>
             <CustomText style={{ color: Colors.primary }} variant="h7">
-              ${fare}
+              ₹{fare}
             </CustomText>
           </View>
-        ))}
+        ))
       {showDistance && (
         <View style={styles.cardDetails}>
           <CustomText variant="h7">Distance to pickup</CustomText>

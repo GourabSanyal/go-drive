@@ -60,6 +60,8 @@ const HomeModal: FC<HomeModalProps> = ({
               from={from}
               to={to}
               fare={fare}
+              showDistance
+              showFare
             />
             {rideAccepted ? <View style={{
               gap: 10,

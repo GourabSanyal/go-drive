@@ -177,13 +177,14 @@ export const modalStyles = StyleSheet.create({
         padding: 20,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: "#fff"
+        borderColor: "#fff",
     },
     modalContainer: {
         height: "50%",
         width: "90%",
         alignSelf: "center",
         backgroundColor: "transparent",
+        marginBottom: 50
     },
     userCardContainer: {
         flexDirection: "row",

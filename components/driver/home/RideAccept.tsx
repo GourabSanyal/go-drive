@@ -13,18 +13,19 @@ import { Colors } from "@/theme/colors";
 import Map from "./Map";
 import PaymentReceived from "./PaymentReceived";
 import CustomText from "@/components/ui/CustomText";
+import { useSocket } from "@/src/hooks/useSocket";
 
 interface DriverAppRideState {
   activeRideId?: string;
   activeRideRoomId?: string;
   status:
-    | "idle"
-    | "viewing_quotations"
-    | "bidding_in_progress"
-    | "bid_accepted_starting_ride"
-    | "ride_in_progress"
-    | "ride_completed"
-    | "error";
+  | "idle"
+  | "viewing_quotations"
+  | "bidding_in_progress"
+  | "bid_accepted_starting_ride"
+  | "ride_in_progress"
+  | "ride_completed"
+  | "error";
   errorMessage?: string;
   riderInfo?: any;
   acceptedBid?: { amount: number; currency: string };
@@ -55,8 +56,9 @@ export default function RideAccept({
   const [rideStarted, setRideStarted] = useState(false);
   const [rideCompleted, setRideCompleted] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const { completeRide } = useSocket()
 
-  const handleSheetChanges = useCallback((index: number) => {}, []);
+  const handleSheetChanges = useCallback((index: number) => { }, []);
 
   const handleAcceptRide = () => setRideStarted(true);
   const handleEndRide = () => {
@@ -64,7 +66,10 @@ export default function RideAccept({
       setRideCompleted(true);
     }
   };
-  const handleFinishRide = () => router.navigate("/driver/(tabs)/home");
+  const handleFinishRide = () => {
+    completeRide()
+    router.navigate("/driver/(tabs)/home");
+  }
 
   function deg2rad(deg: number) {
     return deg * (Math.PI / 180);
@@ -78,9 +83,9 @@ export default function RideAccept({
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(deg2rad(lat1)) *
-        Math.cos(deg2rad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distanceKm = R * c;
@@ -193,19 +198,10 @@ export default function RideAccept({
         </BottomSheetView>
       </BottomSheet>
       <View style={styles.buttons}>
-        {!rideCompleted ? (
+        {!rideCompleted && (
           <AcceptRejectButtons
-            showEndRide={rideStarted}
-            rejectFn={handleEndRide}
-            acceptFn={handleAcceptRide}
-            acceptTxt={rideStarted ? "END RIDE" : "START RIDE"}
-            rejectTxt={rideStarted ? "CANCEL (not implemented)" : "REJECT RIDE"}
-          />
-        ) : (
-          <AcceptRejectButtons
-            showEndRide={false}
+            showEndRide
             rejectFn={handleFinishRide}
-            acceptTxt=""
             rejectTxt="FINISH & GO HOME"
           />
         )}
@@ -213,18 +209,3 @@ export default function RideAccept({
     </GestureHandlerRootView>
   );
 }
-
-const cstyles = StyleSheet.create({
-  page: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  container: {
-    height: 300,
-    width: 300,
-  },
-  map: {
-    flex: 1,
-  },
-});

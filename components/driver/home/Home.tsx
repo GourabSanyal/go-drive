@@ -10,6 +10,10 @@ import { BidSubmitPayload } from '@/src/types/bid.types'
 import CustomText from '@/components/ui/CustomText'
 import HomeModal from './HomeModal'
 import * as Location from "expo-location"
+import { storage } from '@/src/utils/storage/mmkv'
+import firestore, { addDoc, collection, getFirestore } from "@react-native-firebase/firestore"
+import { DriverAppRideState } from '@/src/contexts/SocketContext'
+import { getAuth } from '@react-native-firebase/auth'
 
 export default function Home() {
   const router = useRouter();
@@ -31,6 +35,7 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [driverLocation, setDriverLocation] = useState<any>()
+  const db = getFirestore()
 
   useEffect(() => {
     Location.requestForegroundPermissionsAsync().then(res => {
@@ -42,6 +47,25 @@ export default function Home() {
     }
   }, [isConnected, socketId, announceDriverAvailability]);
 
+  const saveRideDataToFirestore = async (rideData: QuotationRequest, rideState: DriverAppRideState) => {
+    try {
+      console.log("🫱🫱started saving...")
+      const userId = storage.getString("userId")
+      const docRef = await addDoc(collection(db, 'rideDetails'), {
+        rideId: rideState.activeRideId,
+        dropoffLocation: rideData.dropoffLocation,
+        pickupLocation: rideData.pickupLocation,
+        selectedRiderInfo: rideState.riderInfo,
+        status: rideState.status,
+        amount: rideData.bidAmount,
+        userId
+      });
+      console.log("Ride data saved with ID: ", docRef.id);
+    } catch (error) {
+      console.error("Error saving ride data: ", error);
+    }
+  };
+
   useEffect(() => {
     if (
       driverRideState.status === "bid_accepted_starting_ride" &&
@@ -49,6 +73,8 @@ export default function Home() {
       driverRideState.activeRideRoomId
     ) {
       console.log("Driver App: Ride confirmed via hook state, navigating...");
+      saveRideDataToFirestore(selectedQuotation!, driverRideState)
+
       router.push({
         pathname: "/driver/(home)/ride-accept" as RelativePathString,
         params: {
@@ -121,15 +147,16 @@ export default function Home() {
     setIsSubmitting(true);
     setSubmissionStatus("Submitting bid...");
 
+    const driverName = storage.getString("name");
     const bidPayload: BidSubmitPayload = {
       quotationRequestId: selectedQuotation.id,
       driverId: socketId,
       bidAmount: numericBidAmount,
-      currency: "USD",
+      currency: "INR",
       estimatedArrivalTime: estimatedArrivalTime,
       // TODO: Replace hardcoded driver details with actual authenticated driver profile data
       vehicleDetails: "Toyota Camry - ABC 123",
-      driverName: "John Doe (Driver)",
+      driverName: driverName!,
       driverRating: 4.8,
     };
 
@@ -164,10 +191,8 @@ export default function Home() {
                   time={item.requestedAt}
                   from={item.pickupLocation}
                   to={item.dropoffLocation}
-                  // FIXME: There's no vehicle type in the payload
                   vehicle={item.vehicleType}
-                  // FIXME: add bidAmount in QuotationRequest type
-                  fare={item.bidAmount}
+                  fare={item.bidAmount!}
                 />
               </View>
             )}
@@ -175,13 +200,11 @@ export default function Home() {
         </View>}
       <HomeModal
         submissionStatus={submissionStatus}
-        // FIXME: add bidAmount in QuotationRequest type
-        fare={selectedQuotation?.bidAmount}
+        fare={selectedQuotation?.fareOffer?.amount!}
         setBidAmount={setBidAmount}
         bidAmount={bidAmount}
         isSubmitting={isSubmitting}
-        // FIXME: add name in QuotationRequest type
-        name={"Rider name"}
+        name={selectedQuotation?.userName!}
         handleSubmitBid={handleSubmitBid}
         handleRejectRide={handleRejectBid}
         showModal={showInfoModal}
