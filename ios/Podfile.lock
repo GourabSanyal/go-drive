@@ -1911,13 +1911,13 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - rnmapbox-maps (10.1.38):
+  - rnmapbox-maps (10.1.39):
     - MapboxMaps (= 11.8.0)
     - React
     - React-Core
-    - rnmapbox-maps/DynamicLibrary (= 10.1.38)
+    - rnmapbox-maps/DynamicLibrary (= 10.1.39)
     - Turf
-  - rnmapbox-maps/DynamicLibrary (10.1.38):
+  - rnmapbox-maps/DynamicLibrary (10.1.39):
     - DoubleConversion
     - hermes-engine
     - MapboxMaps (= 11.8.0)
@@ -2489,7 +2489,7 @@ SPEC CHECKSUMS:
   ReactCodegen: f853a20cc9125c5521c8766b4b49375fec20648b
   ReactCommon: 300d8d9c5cb1a6cd79a67cf5d8f91e4d477195f9
   RNGestureHandler: 9c8bf98209e658e1ceb13026f176e4ede1f24491
-  rnmapbox-maps: 39471ac16928ce96c3555c0a31d2df7713c9e496
+  rnmapbox-maps: b748fc47f22027099523343b541dcb64140b84bb
   RNReanimated: 2e5069649cbab2c946652d3b97589b2ae0526220
   RNScreens: 362f4c861dd155f898908d5035d97b07a3f1a9d1
   RNSVG: 43aff28bae846abe9c45625fe8b4816b7ac73ffd
