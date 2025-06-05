@@ -7,6 +7,8 @@ import HomeUserCard, { HomeUserCardProps } from './HomeUserCard';
 import ModalRideDetails, { ModalRideDetailsProps } from './ModalRideDetails';
 import { useRouter } from 'expo-router';
 import AcceptRejectButtons from './AcceptRejectButtons';
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
+import { Colors } from '@/theme/colors';
 
 export interface HomeModalProps extends HomeUserCardProps, ModalRideDetailsProps {
   showModal?: boolean
@@ -43,13 +45,18 @@ const HomeModal: FC<HomeModalProps> = ({
     setBidAmount(e.nativeEvent.text)
   }
 
+  const keyboard = useAnimatedKeyboard()
+  const animatedKeyboardStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: -keyboard.height.value / 2 }]
+  }))
+
   return (
     <Portal>
       <Modal
         visible={showModal}
         onDismiss={handleRejectRide}
         contentContainerStyle={styles.modalContainer}>
-        <ScrollView style={styles.container}>
+        <Animated.ScrollView style={styles.container}>
           <View style={styles.modalContainer}>
             <HomeUserCard
               name={name}
@@ -60,11 +67,16 @@ const HomeModal: FC<HomeModalProps> = ({
               from={from}
               to={to}
               fare={fare}
+              showDistance
+              showFare={false}
             />
-            {rideAccepted ? <View style={{
+            {rideAccepted ? <Animated.View style={[{
               gap: 10,
-              marginTop: 10
-            }}>
+              marginTop: 10,
+              backgroundColor: "#111",
+              padding: 10,
+              borderRadius: 10
+            }, animatedKeyboardStyle]}>
               <TextInput
                 onChange={handleInputChange}
                 style={{
@@ -87,7 +99,7 @@ const HomeModal: FC<HomeModalProps> = ({
                 {/* {isSubmitting ? "Submitting" : "Submit your bid"} */}
                 {submissionStatus === "Submitting bid..." || isSubmitting ? "Submitting..." : "Submit your bid"}
               </CustomButton>
-            </View> :
+            </Animated.View> :
               <AcceptRejectButtons
                 acceptFn={handleAcceptRide}
                 rejectFn={handleRejectRide}
@@ -95,7 +107,7 @@ const HomeModal: FC<HomeModalProps> = ({
                 rejectTxt='Reject Ride'
               />}
           </View>
-        </ScrollView>
+        </Animated.ScrollView>
       </Modal>
     </Portal>
   );

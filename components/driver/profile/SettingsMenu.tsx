@@ -1,3 +1,4 @@
+import React from "react"
 import CustomText from '@/components/ui/CustomText'
 import { ScrollView, TouchableOpacity } from 'react-native'
 import { settingsMenuStyles as styles } from './styles'
@@ -9,9 +10,11 @@ import Wallet from "@/assets/images/profile/wallet.svg"
 import FAQ from "@/assets/images/profile/faq.svg"
 import Note from "@/assets/images/profile/note.svg"
 import Manage from "@/assets/images/profile/manage.svg"
+import { getAuth, signOut } from "@react-native-firebase/auth"
+import { useRouter } from "expo-router"
 
 export default function SettingsMenu() {
-
+    const router = useRouter()
     const SETTINGS = [
         {
             icon: <Check width={24} height={24} />,
@@ -40,11 +43,7 @@ export default function SettingsMenu() {
         {
             icon: <Note width={24} height={24} />,
             title: "Terms and condition"
-        },
-        {
-            icon: <LogOut color={Colors.primary} />,
-            title: "Logout"
-        },
+        }
 
     ]
 
@@ -58,6 +57,13 @@ export default function SettingsMenu() {
                     </TouchableOpacity>
                 )
             })}
+            <TouchableOpacity
+                onPress={() => signOut(getAuth()).then(() => router.replace("/auth/signup"))}
+                activeOpacity={1}
+                style={styles.settingsCard}>
+                <LogOut color={Colors.primary} />
+                <CustomText>Logout</CustomText>
+            </TouchableOpacity>
         </ScrollView>
     )
 }

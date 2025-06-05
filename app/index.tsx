@@ -1,19 +1,52 @@
 import { StyleSheet, View } from 'react-native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Logo from '@/assets/images/logo.svg';
 import { useRouter } from 'expo-router';
 import CustomText from '@/components/ui/CustomText';
 import { StatusBar } from 'expo-status-bar';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { FirebaseAuthTypes, getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
+import { storage } from '@/src/utils/storage/mmkv';
 
+GoogleSignin.configure({
+    webClientId: '958848343136-qvt997jbeo3o4j2cv50j8cn7msjc76tu.apps.googleusercontent.com',
+});
 
 export default function Index() {
     const router = useRouter();
+
+    const [initializing, setInitializing] = useState(true);
+    const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
+
+    // Handle user state changes
+    function handleAuthStateChanged(user: any) {
+        setUser(user);
+        if (initializing) setInitializing(false);
+    }
+
     useEffect(() => {
-        setTimeout(() => {
-            router.replace("/driver/home"); // DELETE THIS AND ↓
-            // router.replace("/onboarding/screen1"); // COMMENT THIS OUT
-        }, 1000);
-    });
+        const subscriber = onAuthStateChanged(getAuth(), handleAuthStateChanged);
+        return subscriber;
+    }, []);
+
+    useEffect(() => {
+        if (initializing) return
+
+        const hasIdToken = storage.getString("idToken")
+        
+        if (user && hasIdToken) {
+            router.replace("/driver/home")
+        } else {
+            router.replace("/auth/signup");
+        }
+    }, [user, initializing])
+
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //         // router.replace("/driver/home"); // DELETE THIS AND ↓
+    //         router.replace("/auth/signup"); // COMMENT THIS OUT
+    //     }, 1000);
+    // });
 
     return (
         <View style={styles.container}>

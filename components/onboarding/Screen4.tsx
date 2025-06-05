@@ -25,7 +25,7 @@ const Screen4 = () => {
                 </CustomText>
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress={() => router.replace("/auth/signup")}>
+                    onPress={() => router.replace("/driver/home")}>
                     <NextIcon style={commonOnboardStyles.nextBtn} />
                 </TouchableOpacity>
             </View>

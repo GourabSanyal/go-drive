@@ -20,7 +20,7 @@ interface Location {
   timestamp?: string;
 }
 
-interface DriverAppRideState {
+export interface DriverAppRideState {
   activeRideId?: string;
   activeRideRoomId?: string;
   status:

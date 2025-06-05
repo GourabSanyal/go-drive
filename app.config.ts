@@ -44,11 +44,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     backgroundColor: "#ffffff",
   },
   ios: {
+    googleServicesFile: "./GoogleService-Info.plist",
     supportsTablet: true,
     bundleIdentifier: getUniqueIdentifier(),
     jsEngine: "hermes",
   },
   android: {
+    googleServicesFile: "./google-services.json",
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",
       backgroundColor: "#ffffff",
@@ -66,6 +68,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
+    "@react-native-firebase/app",
+    "@react-native-firebase/auth",
+    "@react-native-firebase/crashlytics",
+    [
+      "expo-build-properties",
+      {
+        "ios": {
+          "useFrameworks": "static"
+        }
+      }
+    ],
     [
       "@rnmapbox/maps",
       {

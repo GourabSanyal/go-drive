@@ -10,6 +10,9 @@ import { BidSubmitPayload } from '@/src/types/bid.types'
 import CustomText from '@/components/ui/CustomText'
 import HomeModal from './HomeModal'
 import * as Location from "expo-location"
+import { storage } from '@/src/utils/storage/mmkv'
+import { addDoc, collection, getFirestore, serverTimestamp } from "@react-native-firebase/firestore"
+import { DriverAppRideState } from '@/src/contexts/SocketContext'
 
 export default function Home() {
   const router = useRouter();
@@ -31,6 +34,7 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [driverLocation, setDriverLocation] = useState<any>()
+  const db = getFirestore()
 
   useEffect(() => {
     Location.requestForegroundPermissionsAsync().then(res => {
@@ -43,12 +47,37 @@ export default function Home() {
   }, [isConnected, socketId, announceDriverAvailability]);
 
   useEffect(() => {
+    if (selectedQuotation && driverRideState.status === "bid_accepted_starting_ride") {
+      const saveRideDataToFirestore = async (rideData: QuotationRequest, rideState: DriverAppRideState) => {
+        try {
+          const userId = storage.getString("userId")
+          const docRef = await addDoc(collection(db, "rides"), {
+            rideId: rideState.activeRideId,
+            dropoffLocation: rideData.dropoffLocation,
+            pickupLocation: rideData.pickupLocation,
+            // selectedRiderInfo: rideState.riderInfo,
+            status: rideState.status,
+            fare: rideState.acceptedBid?.amount,
+            userId: userId,
+            createdAt: serverTimestamp()
+          });
+          console.log("Ride data saved with ID: ", docRef.id);
+        } catch (error) {
+          console.error("Error saving ride data: ", error);
+        }
+      };
+      saveRideDataToFirestore(selectedQuotation, driverRideState)
+    }
+  }, [selectedQuotation, driverRideState])
+
+  useEffect(() => {
     if (
       driverRideState.status === "bid_accepted_starting_ride" &&
       driverRideState.activeRideId &&
       driverRideState.activeRideRoomId
     ) {
       console.log("Driver App: Ride confirmed via hook state, navigating...");
+
       router.push({
         pathname: "/driver/(home)/ride-accept" as RelativePathString,
         params: {
@@ -121,15 +150,16 @@ export default function Home() {
     setIsSubmitting(true);
     setSubmissionStatus("Submitting bid...");
 
+    const driverName = storage.getString("name");
     const bidPayload: BidSubmitPayload = {
       quotationRequestId: selectedQuotation.id,
       driverId: socketId,
       bidAmount: numericBidAmount,
-      currency: "USD",
+      currency: "INR",
       estimatedArrivalTime: estimatedArrivalTime,
       // TODO: Replace hardcoded driver details with actual authenticated driver profile data
       vehicleDetails: "Toyota Camry - ABC 123",
-      driverName: "John Doe (Driver)",
+      driverName: driverName!,
       driverRating: 4.8,
     };
 
@@ -145,43 +175,41 @@ export default function Home() {
     }
   };
 
+  if (availableQuotations.length === 0) return (
+    <View style={[styles.noRidesContainer, CommonStyles.container]}>
+      <CustomText style={styles.noRidesText}>No available ride requests.</CustomText>
+      <CustomText style={styles.noRidesSubText}>
+        New requests will appear here automatically.
+      </CustomText>
+    </View>
+  )
+
   return (
     <View style={CommonStyles.container}>
-      {availableQuotations.length === 0 && !selectedQuotation ?
-        <View style={styles.noRidesContainer}>
-          <CustomText style={styles.noRidesText}>No available ride requests.</CustomText>
-          <CustomText style={styles.noRidesSubText}>
-            New requests will appear here automatically.
-          </CustomText>
-        </View> :
-        <View style={{ height: 1000 }}>
-          <FlatList
-            data={availableQuotations}
-            renderItem={({ item }) => (
-              <View style={{ height: 200, marginBottom: 20 }}>
-                <UpcomingRideBanner
-                  onPress={() => handleSelectRide(item)}
-                  time={item.requestedAt}
-                  from={item.pickupLocation}
-                  to={item.dropoffLocation}
-                  // FIXME: There's no vehicle type in the payload
-                  vehicle={item.vehicleType}
-                  // FIXME: add bidAmount in QuotationRequest type
-                  fare={item.bidAmount}
-                />
-              </View>
-            )}
-          />
-        </View>}
+      <View style={{ height: 1000 }}>
+        <FlatList
+          data={availableQuotations}
+          renderItem={({ item }) => (
+            <View style={{ height: 200, marginBottom: 20 }}>
+              <UpcomingRideBanner
+                onPress={() => handleSelectRide(item)}
+                time={item.requestedAt}
+                from={item.pickupLocation}
+                to={item.dropoffLocation}
+                vehicle={item.vehicleType}
+                fare={item.bidAmount!}
+              />
+            </View>
+          )}
+        />
+      </View>
       <HomeModal
         submissionStatus={submissionStatus}
-        // FIXME: add bidAmount in QuotationRequest type
-        fare={selectedQuotation?.bidAmount}
+        fare={selectedQuotation?.fareOffer?.amount!}
         setBidAmount={setBidAmount}
         bidAmount={bidAmount}
         isSubmitting={isSubmitting}
-        // FIXME: add name in QuotationRequest type
-        name={"Rider name"}
+        name={selectedQuotation?.userName!}
         handleSubmitBid={handleSubmitBid}
         handleRejectRide={handleRejectBid}
         showModal={showInfoModal}

@@ -23,7 +23,7 @@ const RideAcceptDetails: FC<RideAcceptDetailsProps> = ({
                 <CustomText
                     style={{ color: Colors.primary }}
                     variant='h7'>
-                    {time}
+                    {distance}
                 </CustomText>
             </View>
             <View style={styles.rideDetails}>
@@ -31,7 +31,7 @@ const RideAcceptDetails: FC<RideAcceptDetailsProps> = ({
                 <CustomText
                     style={{ color: Colors.primary }}
                     variant='h7'>
-                    {distance}
+                    {time}
                 </CustomText>
             </View>
         </View>

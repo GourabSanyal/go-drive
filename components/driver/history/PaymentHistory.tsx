@@ -3,7 +3,7 @@ import { FlatList, View } from 'react-native'
 import Building from "@/assets/images/history/building.svg"
 import { DATA, HistoryStyles as styles } from './styles'
 
-interface CardProps {
+interface PaymentHistoryCardProps {
     from: string
     to: string
     vehicleType: string
@@ -12,7 +12,7 @@ interface CardProps {
 }
 
 export default function PaymentHistory({ data }: {
-    data: CardProps[]
+    data: PaymentHistoryCardProps[]
 }) {
     // const dbTimestamp = "2025-04-17T19:48:54.662";
     // const date = new Date(dbTimestamp);
@@ -47,7 +47,7 @@ export default function PaymentHistory({ data }: {
                         </View>
                         <CustomText
                             style={styles.fare}
-                            variant='h5'>${item.fare}</CustomText>
+                            variant='h5'>₹{item.fare}</CustomText>
                     </View>
                 )}
             />
