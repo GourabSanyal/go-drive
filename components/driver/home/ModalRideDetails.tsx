@@ -12,7 +12,7 @@ export interface ModalRideDetailsProps {
   to: LocationTypes;
   showFare?: boolean;
   showDistance?: boolean;
-  fare: number;
+  fare?: number;
 }
 
 interface LocationTypes {
@@ -75,9 +75,9 @@ export default function ModalRideDetails({
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(deg2rad(lat1)) *
-        Math.cos(deg2rad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distanceKm = R * c;
@@ -171,14 +171,14 @@ export default function ModalRideDetails({
 
   return (
     <>
-        (fare && (
-          <View style={styles.cardDetails}>
-            <CustomText variant="h7">Estimated fare</CustomText>
-            <CustomText style={{ color: Colors.primary }} variant="h7">
-              ₹{fare}
-            </CustomText>
-          </View>
-        ))
+      {showFare && (fare && (
+        <View style={styles.cardDetails}>
+          <CustomText variant="h7">Estimated fare</CustomText>
+          <CustomText style={{ color: Colors.primary }} variant="h7">
+            ₹{fare}
+          </CustomText>
+        </View>
+      ))}
       {showDistance && (
         <View style={styles.cardDetails}>
           <CustomText variant="h7">Distance to pickup</CustomText>

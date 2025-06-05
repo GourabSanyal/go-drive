@@ -1,15 +1,18 @@
 import { Colors } from "@/theme/colors";
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { RFValue } from 'react-native-responsive-fontsize'
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+
+const isIOS = Platform.OS === "ios";
 
 export const HomeStyles = StyleSheet.create({
     noRidesContainer: {
         alignItems: "center",
         justifyContent: "center",
-        paddingVertical: 40,
-        marginTop: 20,
+        // paddingVertical: 40,
+        // marginTop: 20,
         backgroundColor: Colors.background,
-        borderRadius: 12,
+        // borderRadius: 12,
     },
     noRidesText: {
         textAlign: "center",
@@ -174,17 +177,16 @@ export const modalStyles = StyleSheet.create({
         height: "100%",
         width: "100%",
         backgroundColor: "#111",
-        padding: 20,
+        padding: 10,
         borderRadius: 10,
         borderWidth: 1,
         borderColor: "#fff",
     },
     modalContainer: {
-        height: "50%",
+        height: hp("55%"), // isIOS ? hp("50%") : hp("55%")
         width: "90%",
         alignSelf: "center",
-        backgroundColor: "transparent",
-        marginBottom: 50
+        backgroundColor: "transparent"
     },
     userCardContainer: {
         flexDirection: "row",

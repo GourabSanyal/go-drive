@@ -88,7 +88,7 @@ const Signup = () => {
             )
             // Create user if not exists
             if (!existingUser.docs[0]) {
-                await addDoc(collection(db, 'drivers'), { name, email, photo })
+                await addDoc(collection(db, 'drivers'), { userId, name, email, photo })
             }
             // Create a Google credential with the token
             const googleCredential = GoogleAuthProvider.credential(signInResult.data!.idToken);

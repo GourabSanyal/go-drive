@@ -46,17 +46,15 @@ interface LocationTypes {
 export default function RideAccept({
   rideId,
   activeRideRoomId,
-  driverRideState,
 }: {
   rideId: string | string[];
   activeRideRoomId: string | string[];
-  driverRideState: DriverAppRideState;
 }) {
   const router = useRouter();
   const [rideStarted, setRideStarted] = useState(false);
   const [rideCompleted, setRideCompleted] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const { completeRide } = useSocket()
+  const { completeRide, driverRideState } = useSocket()
 
   const handleSheetChanges = useCallback((index: number) => { }, []);
 
@@ -114,6 +112,30 @@ export default function RideAccept({
       return meters < 1000
         ? meters.toFixed(0) + " m"
         : kilometers.toFixed(2) + " km";
+    }
+    return "Calculating...";
+  }, [driverRideState]);
+
+  const calculateTimeToDestination = useMemo(() => {
+    if (
+      driverRideState.status === "bid_accepted_starting_ride" &&
+      driverRideState.confirmedRideDetails?.pickupLocation &&
+      driverRideState.confirmedRideDetails?.dropoffLocation
+    ) {
+      const fromLoc = driverRideState.confirmedRideDetails.pickupLocation;
+      const toLoc = driverRideState.confirmedRideDetails.dropoffLocation;
+      const { kilometers } = getDistance(
+        fromLoc.latitude,
+        fromLoc.longitude,
+        toLoc.latitude,
+        toLoc.longitude
+      );
+      const averageSpeed = 30; // Average speed in km/h
+      const timeInHours = kilometers / averageSpeed;
+      const timeInMinutes = Math.round(timeInHours * 60);
+      return timeInMinutes < 60
+        ? timeInMinutes + " min"
+        : Math.floor(timeInMinutes / 60) + " hr " + (timeInMinutes % 60) + " min";
     }
     return "Calculating...";
   }, [driverRideState]);
@@ -176,7 +198,7 @@ export default function RideAccept({
           <View style={modalStyles.modalContainer}>
             <RideAcceptDetails
               distance={calculatedDistance}
-              time="Calculating..."
+              time={calculateTimeToDestination}
             />
             <HomeUserCard
               name={driverRideState.riderInfo?.name || "Rider"}

@@ -3,7 +3,6 @@ import { StyleSheet } from "react-native";
 
 export const HistoryStyles = StyleSheet.create({
     container: {
-        height: "78%",
         width: "90%",
         alignSelf: "center",
         paddingVertical: 20,
@@ -23,7 +22,28 @@ export const HistoryStyles = StyleSheet.create({
     fare: {
         color: Colors.primary,
         width: "17%"
-    }
+    },
+    noRidesContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        // paddingVertical: 40,
+        // marginTop: 20,
+        backgroundColor: Colors.background,
+        // borderRadius: 12,
+    },
+    noRidesText: {
+        textAlign: "center",
+        fontSize: 19,
+        fontWeight: "600",
+        color: Colors.text,
+    },
+    noRidesSubText: {
+        textAlign: "center",
+        fontSize: 15,
+        color: Colors.text,
+        opacity: 0.9,
+        marginTop: 8,
+    },
 })
 
 export const DATA = [

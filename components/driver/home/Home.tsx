@@ -11,9 +11,8 @@ import CustomText from '@/components/ui/CustomText'
 import HomeModal from './HomeModal'
 import * as Location from "expo-location"
 import { storage } from '@/src/utils/storage/mmkv'
-import firestore, { addDoc, collection, getFirestore } from "@react-native-firebase/firestore"
+import { addDoc, collection, getFirestore, serverTimestamp } from "@react-native-firebase/firestore"
 import { DriverAppRideState } from '@/src/contexts/SocketContext'
-import { getAuth } from '@react-native-firebase/auth'
 
 export default function Home() {
   const router = useRouter();
@@ -47,24 +46,29 @@ export default function Home() {
     }
   }, [isConnected, socketId, announceDriverAvailability]);
 
-  const saveRideDataToFirestore = async (rideData: QuotationRequest, rideState: DriverAppRideState) => {
-    try {
-      console.log("🫱🫱started saving...")
-      const userId = storage.getString("userId")
-      const docRef = await addDoc(collection(db, 'rideDetails'), {
-        rideId: rideState.activeRideId,
-        dropoffLocation: rideData.dropoffLocation,
-        pickupLocation: rideData.pickupLocation,
-        selectedRiderInfo: rideState.riderInfo,
-        status: rideState.status,
-        amount: rideData.bidAmount,
-        userId
-      });
-      console.log("Ride data saved with ID: ", docRef.id);
-    } catch (error) {
-      console.error("Error saving ride data: ", error);
+  useEffect(() => {
+    if (selectedQuotation && driverRideState.status === "bid_accepted_starting_ride") {
+      const saveRideDataToFirestore = async (rideData: QuotationRequest, rideState: DriverAppRideState) => {
+        try {
+          const userId = storage.getString("userId")
+          const docRef = await addDoc(collection(db, "rides"), {
+            rideId: rideState.activeRideId,
+            dropoffLocation: rideData.dropoffLocation,
+            pickupLocation: rideData.pickupLocation,
+            // selectedRiderInfo: rideState.riderInfo,
+            status: rideState.status,
+            fare: rideState.acceptedBid?.amount,
+            userId: userId,
+            createdAt: serverTimestamp()
+          });
+          console.log("Ride data saved with ID: ", docRef.id);
+        } catch (error) {
+          console.error("Error saving ride data: ", error);
+        }
+      };
+      saveRideDataToFirestore(selectedQuotation, driverRideState)
     }
-  };
+  }, [selectedQuotation, driverRideState])
 
   useEffect(() => {
     if (
@@ -73,7 +77,6 @@ export default function Home() {
       driverRideState.activeRideRoomId
     ) {
       console.log("Driver App: Ride confirmed via hook state, navigating...");
-      saveRideDataToFirestore(selectedQuotation!, driverRideState)
 
       router.push({
         pathname: "/driver/(home)/ride-accept" as RelativePathString,
@@ -172,32 +175,34 @@ export default function Home() {
     }
   };
 
+  if (availableQuotations.length === 0) return (
+    <View style={[styles.noRidesContainer, CommonStyles.container]}>
+      <CustomText style={styles.noRidesText}>No available ride requests.</CustomText>
+      <CustomText style={styles.noRidesSubText}>
+        New requests will appear here automatically.
+      </CustomText>
+    </View>
+  )
+
   return (
     <View style={CommonStyles.container}>
-      {availableQuotations.length === 0 && !selectedQuotation ?
-        <View style={styles.noRidesContainer}>
-          <CustomText style={styles.noRidesText}>No available ride requests.</CustomText>
-          <CustomText style={styles.noRidesSubText}>
-            New requests will appear here automatically.
-          </CustomText>
-        </View> :
-        <View style={{ height: 1000 }}>
-          <FlatList
-            data={availableQuotations}
-            renderItem={({ item }) => (
-              <View style={{ height: 200, marginBottom: 20 }}>
-                <UpcomingRideBanner
-                  onPress={() => handleSelectRide(item)}
-                  time={item.requestedAt}
-                  from={item.pickupLocation}
-                  to={item.dropoffLocation}
-                  vehicle={item.vehicleType}
-                  fare={item.bidAmount!}
-                />
-              </View>
-            )}
-          />
-        </View>}
+      <View style={{ height: 1000 }}>
+        <FlatList
+          data={availableQuotations}
+          renderItem={({ item }) => (
+            <View style={{ height: 200, marginBottom: 20 }}>
+              <UpcomingRideBanner
+                onPress={() => handleSelectRide(item)}
+                time={item.requestedAt}
+                from={item.pickupLocation}
+                to={item.dropoffLocation}
+                vehicle={item.vehicleType}
+                fare={item.bidAmount!}
+              />
+            </View>
+          )}
+        />
+      </View>
       <HomeModal
         submissionStatus={submissionStatus}
         fare={selectedQuotation?.fareOffer?.amount!}

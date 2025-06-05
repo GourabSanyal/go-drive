@@ -5,10 +5,10 @@ import { userCardStyles as styles } from './styles'
 import { FC } from 'react'
 
 export interface UserCardProps {
-    fullname: string
+    fullname: string | undefined
     contact: string
     rating: number
-    userImage: string
+    userImage: string | undefined
 }
 
 const UserCard: FC<UserCardProps> = ({
@@ -20,7 +20,7 @@ const UserCard: FC<UserCardProps> = ({
     return (
         <View style={styles.userCardContainer}>
             <View>
-                <CustomText variant='h2'>{fullname}</CustomText>
+                <CustomText variant='h2'>{fullname && fullname}</CustomText>
                 <CustomText variant='h7'>{contact}</CustomText>
                 <View style={CommunityStyles.ratingContainer}>
                     {Array.from({ length: 5 }).map((star, index) => (
