@@ -17,7 +17,7 @@ const BalanceCard: FC<BalanceCardProps> = ({ balance }) => {
                 <View style={styles.balanceLabel}>
                     <CustomText variant='h7' style={{ color: "black" }}>Your balance</CustomText>
                 </View>
-                <CustomText variant='h2'>${balance}</CustomText>
+                <CustomText variant='h2'>₹{balance}</CustomText>
             </View>
 
             <View style={styles.actionsContainer}>

@@ -24,7 +24,7 @@ const VerifyOtp = () => {
             </Text>
             <Margin margin={30} />
             <CustomButton
-                onPress={() => router.replace("/driver/home")}
+                onPress={() => router.replace("/onboarding/screen1")}
                 status="primary"
                 size="medium" >
                 Verify OTP
