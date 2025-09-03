@@ -33,7 +33,7 @@ export interface DriverAppRideState {
     | "error";
   errorMessage?: string;
   confirmedRideDetails?: any;
-  riderInfo?: any;
+  riderInfo?: any; // Optional since server doesn't provide this
   acceptedBid?: { amount: number; currency: string };
 }
 
@@ -141,12 +141,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const handleBidError = (data: {
-      quotationRequestId: string;
       message: string;
     }) => {
       console.error(
-        "Bid submission error for:",
-        data.quotationRequestId,
+        "Bid submission error:",
         data.message
       );
       // Potentially show an alert or update UI to reflect the error
@@ -165,9 +163,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       active_ride_room_id: string;
       rideId: string;
       rideDetails: any;
-      riderInfo: any;
       acceptedBidAmount?: number;
       acceptedBidCurrency?: string;
+      acceptedBidDetails?: any;
     }) => {
       console.log(
         "Ride confirmed to driver! Ride ID:",
@@ -180,7 +178,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         activeRideId: data.rideId,
         activeRideRoomId: data.active_ride_room_id,
         confirmedRideDetails: data.rideDetails,
-        riderInfo: data.riderInfo,
+        riderInfo: undefined, // Server doesn't send riderInfo, so we'll set it as undefined
         acceptedBid:
           data.acceptedBidAmount && data.acceptedBidCurrency
             ? {

@@ -118,11 +118,11 @@ class SocketClient {
     });
 
     this.socket.on("ride_confirmed_to_driver", (data) => {
-      // data: { active_ride_room_id, rideId, rideDetails, riderInfo }
+      // data: { active_ride_room_id, rideId, rideDetails, acceptedBidAmount, acceptedBidCurrency, acceptedBidDetails }
       this.currentRideInfo = {
         active_ride_room_id: data.active_ride_room_id,
         rideId: data.rideId,
-        riderDetails: data.riderInfo,
+        riderDetails: undefined, // Server doesn't send riderInfo
       };
       // Driver should automatically join the active ride room upon confirmation
       this.joinRoom(data.active_ride_room_id);
