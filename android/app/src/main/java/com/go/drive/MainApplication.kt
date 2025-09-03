@@ -1,4 +1,4 @@
-package com.yourname.stickersmash
+package com.go.drive
 
 import android.app.Application
 import android.content.res.Configuration

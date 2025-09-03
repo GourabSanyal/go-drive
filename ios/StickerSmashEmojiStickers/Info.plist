@@ -28,7 +28,13 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>drive</string>
-          <string>com.yourname.stickersmash</string>
+          <string>com.go.drive</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.958848343136-65kdcs0qmrn045oblnvetl9h72gqebqt</string>
         </array>
       </dict>
       <dict>

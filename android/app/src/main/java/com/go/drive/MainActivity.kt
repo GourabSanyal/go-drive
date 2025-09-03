@@ -1,4 +1,4 @@
-package com.yourname.stickersmash
+package com.go.drive
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
