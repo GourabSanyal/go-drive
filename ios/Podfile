@@ -11,6 +11,8 @@ platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 install! 'cocoapods',
   :deterministic_uuids => false
 
+use_modular_headers!
+project 'StickerSmashEmojiStickers.xcodeproj'
 prepare_react_native_project!
 
 # @generated begin @rnmapbox/maps-rnmapboxmapsimpl - expo prebuild (DO NOT MODIFY) sync-0bedecb404c128a6d193f05eb4ae67ec1d637977
