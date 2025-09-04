@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>drive</string>
-          <string>com.go.drive</string>
+          <string>com.yourname.stickersmash</string>
         </array>
       </dict>
       <dict>

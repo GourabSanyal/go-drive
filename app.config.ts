@@ -4,19 +4,19 @@ const IS_DEV = process.env.APP_VARIANT === "development";
 const IS_PREVIEW = process.env.APP_VARIANT === "preview";
 
 const getUniqueIdentifier = () => {
-  return "com.go.drive";
+  return "com.yourname.stickersmash";
 };
 
 const getAppName = () => {
   if (IS_DEV) {
-    return "StickerSmash (Dev)";
+    return "Go Drive (Dev)";
   }
 
   if (IS_PREVIEW) {
-    return "StickerSmash (Preview)";
+    return "Go Drive (Preview)";
   }
 
-  return "StickerSmash: Emoji Stickers";
+  return "Go Drive";
 };
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
