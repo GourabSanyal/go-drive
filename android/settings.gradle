@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'StickerSmash Emoji Stickers'
+rootProject.name = 'Go Drive'
 
 dependencyResolutionManagement {
   versionCatalogs {

@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "StickerSmashEmojiStickers.app"
-               BlueprintName = "StickerSmashEmojiStickers"
-               ReferencedContainer = "container:StickerSmashEmojiStickers.xcodeproj">
+               BuildableName = "GoDrive.app"
+               BlueprintName = "GoDrive"
+               ReferencedContainer = "container:GoDrive.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "StickerSmashEmojiStickersTests.xctest"
-               BlueprintName = "StickerSmashEmojiStickersTests"
-               ReferencedContainer = "container:StickerSmashEmojiStickers.xcodeproj">
+               BuildableName = "GoDriveTests.xctest"
+               BlueprintName = "GoDriveTests"
+               ReferencedContainer = "container:GoDrive.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "StickerSmashEmojiStickers.app"
-            BlueprintName = "StickerSmashEmojiStickers"
-            ReferencedContainer = "container:StickerSmashEmojiStickers.xcodeproj">
+            BuildableName = "GoDrive.app"
+            BlueprintName = "GoDrive"
+            ReferencedContainer = "container:GoDrive.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "StickerSmashEmojiStickers.app"
-            BlueprintName = "StickerSmashEmojiStickers"
-            ReferencedContainer = "container:StickerSmashEmojiStickers.xcodeproj">
+            BuildableName = "GoDrive.app"
+            BlueprintName = "GoDrive"
+            ReferencedContainer = "container:GoDrive.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
