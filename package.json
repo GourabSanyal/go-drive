@@ -34,6 +34,8 @@
     "@react-native-google-signin/google-signin": "^14.0.1",
     "@react-navigation/native": "^7.0.14",
     "@rnmapbox/maps": "^10.1.38",
+    "@solana-mobile/mobile-wallet-adapter-protocol-web3js": "^2.2.3",
+    "@solana/web3.js": "^1.98.4",
     "@ui-kitten/components": "^5.3.1",
     "date-fns": "^4.1.0",
     "expo": "~52.0.46",
