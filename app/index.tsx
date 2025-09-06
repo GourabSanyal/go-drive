@@ -37,7 +37,7 @@ export default function Index() {
         if (user && hasIdToken) {
             router.replace("/driver/home")
         } else {
-            router.replace("/auth/signup");
+            router.replace("/auth/login");
         }
     }, [user, initializing])
 

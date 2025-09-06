@@ -1,6 +1,6 @@
 import { TouchableOpacity, View } from 'react-native';
 import { CheckBox, Input, Text } from '@ui-kitten/components';
-import { styles } from './styles';
+import { styles } from '../styles';
 import Margin from '@/components/ui/Margin';
 import GoogleIcon from '@/assets/images/auth/google.svg';
 import FacebookIcon from '@/assets/images/auth/facebook.svg';
@@ -26,7 +26,7 @@ import {
 } from '@react-native-firebase/firestore';
 import { storage } from '@/src/utils/storage/mmkv';
 
-const Signup = () => {
+const Login = () => {
     const router = useRouter()
     const segments = useSegments()
     const db = getFirestore()
@@ -155,7 +155,7 @@ const Signup = () => {
                 }
                 }
                 status="primary">
-                Signup
+                Login
             </CustomButton>
             <View style={styles.orContainer}>
                 <View style={styles.orDivider} />
@@ -165,7 +165,7 @@ const Signup = () => {
                 <View style={styles.orDivider} />
             </View>
             <Text style={[styles.h2_bold, { color: Colors.primary }]}>
-                Sign Up with
+                Log In with
             </Text>
             <View style={styles.social}>
                 <TouchableOpacity
@@ -183,16 +183,16 @@ const Signup = () => {
                 </TouchableOpacity>
             </View>
             <Text style={styles.h2_bold}>
-                Don’t have an account?
+                Don't have an account?
                 <Text
-                    onPress={() => router.push("/auth/login")}
+                    onPress={() => router.push("/auth/signup")}
                     style={[styles.h2_bold, styles.underline]}>
-                    Log In
+                    Sign Up
                 </Text>
             </Text>
         </View >
     );
 };
 
-export default Signup;
+export default Login;
 
