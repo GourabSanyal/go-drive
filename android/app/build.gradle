@@ -160,7 +160,7 @@ dependencies {
 
     // Solana Mobile Wallet Adapter dependencies
     implementation("com.solanamobile:mobile-wallet-adapter-clientlib-ktx:2.0.3")
-    implementation("com.solanamobile:web3:1.0.0")
+    implementation("com.solanamobile:web3-solana:0.2.5")
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
