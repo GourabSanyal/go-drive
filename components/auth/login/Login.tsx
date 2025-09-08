@@ -25,6 +25,7 @@ import {
     where
 } from '@react-native-firebase/firestore';
 import { storage } from '@/src/utils/storage/mmkv';
+import LoginWithWallet from './LoginWithWallet';
 
 const Login = () => {
     const router = useRouter()
@@ -55,6 +56,21 @@ const Login = () => {
             console.error('Invalid code');
         }
     }
+
+    const handleSolanaWalletSuccess = (walletData: any) => {
+        console.log('Solana wallet connected:', walletData);
+        // Store wallet data in MMKV for now
+        storage.set("provider", "mwa");
+        storage.set("address", walletData.address);
+        storage.set("isLoggedIn", true);
+        storage.set("profilePicUrl", walletData.profilePicUrl || null);
+        storage.set("username", walletData.username || walletData.address.substring(0, 6));
+        storage.set("attachmentData", JSON.stringify(walletData.attachmentData || {}));
+        storage.set("walletAuthToken", walletData.authToken);
+        
+        // Navigate to home
+        router.replace("/driver/home");
+    };
 
     async function onGoogleButtonPress() {
         try {
@@ -168,7 +184,8 @@ const Login = () => {
                 Log In with
             </Text>
             <View style={styles.social}>
-                <TouchableOpacity
+                <LoginWithWallet onSuccess={handleSolanaWalletSuccess} />
+                {/* <TouchableOpacity
                     onPress={() => onGoogleButtonPress().then(() => router.replace("/driver/home"))}
                     activeOpacity={0.95}>
                     <GoogleIcon width={50} height={50} />
@@ -180,12 +197,12 @@ const Login = () => {
                 <TouchableOpacity
                     activeOpacity={0.95}>
                     <AppleIcon width={50} height={50} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
             <Text style={styles.h2_bold}>
                 Don't have an account?
                 <Text
-                    onPress={() => router.push("/auth/signup")}
+                    onPress={() => router.push("/auth/login")}
                     style={[styles.h2_bold, styles.underline]}>
                     Sign Up
                 </Text>

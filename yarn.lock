@@ -2368,17 +2368,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/vector-icons@npm:^14.0.2":
-  version: 14.1.0
-  resolution: "@expo/vector-icons@npm:14.1.0"
-  peerDependencies:
-    expo-font: "*"
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/f1dcea2c43c0808f48d1953395c6f8025ae5e811648e86b79158492c9ef8af7a40781e42844dfb1434242a08fcf6ab14886825eb2c79bad2a792aebd1eb5077c
-  languageName: node
-  linkType: hard
-
 "@expo/vector-icons@npm:~14.0.4":
   version: 14.0.4
   resolution: "@expo/vector-icons@npm:14.0.4"
@@ -4149,7 +4138,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@solana-mobile/mobile-wallet-adapter-protocol@npm:^2.2.0":
+"@solana-mobile/mobile-wallet-adapter-protocol@npm:^2.2.0, @solana-mobile/mobile-wallet-adapter-protocol@npm:^2.2.3":
   version: 2.2.3
   resolution: "@solana-mobile/mobile-wallet-adapter-protocol@npm:2.2.3"
   dependencies:
@@ -7419,7 +7408,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.25.2"
     "@eva-design/eva": "npm:^2.2.0"
-    "@expo/vector-icons": "npm:^14.0.2"
+    "@expo/vector-icons": "npm:~14.0.4"
     "@gorhom/bottom-sheet": "npm:^5.1.4"
     "@react-native-firebase/app": "npm:^22.2.0"
     "@react-native-firebase/auth": "npm:^22.2.0"
@@ -7428,6 +7417,7 @@ __metadata:
     "@react-native-google-signin/google-signin": "npm:^14.0.1"
     "@react-navigation/native": "npm:^7.0.14"
     "@rnmapbox/maps": "npm:^10.1.38"
+    "@solana-mobile/mobile-wallet-adapter-protocol": "npm:^2.2.3"
     "@solana-mobile/mobile-wallet-adapter-protocol-web3js": "npm:^2.2.3"
     "@solana/web3.js": "npm:^1.98.4"
     "@types/node": "npm:^22.15.14"
@@ -7438,7 +7428,7 @@ __metadata:
     date-fns: "npm:^4.1.0"
     eas-cli: "npm:^16.7.1"
     expo: "npm:~52.0.46"
-    expo-build-properties: "npm:^0.14.6"
+    expo-build-properties: "npm:~0.13.3"
     expo-constants: "npm:17.0.8"
     expo-dev-client: "npm:~5.0.20"
     expo-font: "npm:~13.0.4"
@@ -7457,7 +7447,7 @@ __metadata:
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     react-native: "npm:0.76.9"
-    react-native-gesture-handler: "npm:^2.25.0"
+    react-native-gesture-handler: "npm:~2.20.2"
     react-native-mmkv: "npm:^3.2.0"
     react-native-paper: "npm:^5.14.4"
     react-native-reanimated: "npm:~3.16.1"
@@ -7465,7 +7455,7 @@ __metadata:
     react-native-responsive-screen: "npm:^1.4.2"
     react-native-safe-area-context: "npm:4.12.0"
     react-native-screens: "npm:~4.4.0"
-    react-native-svg: "npm:^15.12.0"
+    react-native-svg: "npm:15.8.0"
     react-native-svg-transformer: "npm:^1.5.1"
     react-test-renderer: "npm:18.3.1"
     socket.io: "npm:^4.8.1"
@@ -8385,15 +8375,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-build-properties@npm:^0.14.6":
-  version: 0.14.8
-  resolution: "expo-build-properties@npm:0.14.8"
+"expo-build-properties@npm:~0.13.3":
+  version: 0.13.3
+  resolution: "expo-build-properties@npm:0.13.3"
   dependencies:
     ajv: "npm:^8.11.0"
     semver: "npm:^7.6.0"
   peerDependencies:
     expo: "*"
-  checksum: 10c0/7c41bd282f0a35ce73da82d5a4bfcfe88ce3a1bf34737bcd06c9f2d4f7100bbf31653ff0171d92c18a13f5322f831b224f9e47bf5b05df8f15d9514d53d0c51b
+  checksum: 10c0/7302ac2403e0cd5d95d0f31c15dcf29a634f716cac022bc17e9ac2e405f577b4d0e2b45cb19b5659472e248824dfcf54250bebf309976a3ef308bc85c6f5d2b1
   languageName: node
   linkType: hard
 
@@ -13403,17 +13393,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:^2.25.0":
-  version: 2.28.0
-  resolution: "react-native-gesture-handler@npm:2.28.0"
+"react-native-gesture-handler@npm:~2.20.2":
+  version: 2.20.2
+  resolution: "react-native-gesture-handler@npm:2.20.2"
   dependencies:
     "@egjs/hammerjs": "npm:^2.0.17"
     hoist-non-react-statics: "npm:^3.3.0"
     invariant: "npm:^2.2.4"
+    prop-types: "npm:^15.7.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/4240c8eedca69eb36b5d3e375b71867251cf8b87a755ba7066b3f73cfdbc80574042dbd4ff821041fd1539c4cd90dbf7ee34586f5a0ea6cc38052375b3169f2e
+  checksum: 10c0/94c16a40370adfaaff8af6aec5938a8d5c5704afaf7ec569d9e11c66ecc3b5c763314c091a76573885636c04d9e6084de3696d59595c56aac9eb17b2f28e5c6c
   languageName: node
   linkType: hard
 
@@ -13555,9 +13546,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-svg@npm:^15.12.0":
-  version: 15.12.1
-  resolution: "react-native-svg@npm:15.12.1"
+"react-native-svg@npm:15.8.0":
+  version: 15.8.0
+  resolution: "react-native-svg@npm:15.8.0"
   dependencies:
     css-select: "npm:^5.1.0"
     css-tree: "npm:^1.1.3"
@@ -13565,7 +13556,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/ed94b57007125c715283fc760438ac8eac0677ced3201f6e272a7cd4459f3fecb672a8eed2c32664e5b8e6e0367585353b0f83f99b231f603d75094bb052c01f
+  checksum: 10c0/03d2cb19c799da6ba41dea0dc414338d01a55549ea4e4a370315c8ec34e1c6de430a62b538f099423060edc8bea6df134f765bde862770059404617c3c296af8
   languageName: node
   linkType: hard
 
