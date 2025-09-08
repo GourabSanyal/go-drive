@@ -7,28 +7,22 @@ import {
   Alert,
 } from 'react-native';
 import { Text } from '@ui-kitten/components';
-import { transact } from '@solana-mobile/mobile-wallet-adapter-protocol-web3js';
-import { PublicKey, Cluster } from '@solana/web3.js';
+import { SolanaMobileWalletAdapter } from '@/src/utils/SolanaMobileWalletAdapter';
+import { Cluster } from '@solana/web3.js';
 import { Colors } from '@/theme/colors';
 import { useRouter } from 'expo-router';
+import { authStorage } from '@/src/utils/storage/authStorage';
 
 import SolanaIcon from '@/assets/images/icons/solana.svg';
 
 interface LoginWithWalletProps {
   disabled?: boolean;
-  onSuccess?: (walletData: {
-    address: string;
-    publicKey: string;
-    authToken: string;
-    username?: string;
-    profilePicUrl?: string;
-    attachmentData?: any;
-  }) => void;
+  onLoginSuccess?: () => void; // Simplified callback that only handles navigation
 }
 
 const LoginWithWallet: React.FC<LoginWithWalletProps> = ({
   disabled = false,
-  onSuccess,
+  onLoginSuccess,
 }) => {
   const router = useRouter();
   const [isConnecting, setIsConnecting] = useState(false);
@@ -41,65 +35,40 @@ const LoginWithWallet: React.FC<LoginWithWalletProps> = ({
   const handleWalletConnect = useCallback(async () => {
     try {
       setIsConnecting(true);
+      
+      // Get the Solana cluster to connect to
       const cluster = getSolanaCluster();
-      console.log(`Connecting to Solana ${cluster}`);
-
-      const result = await transact(async wallet => {
-        const authorizationResult = await wallet.authorize({
-          cluster,
-          identity: {
-            name: 'Go Drive',
-            uri: 'drive://', // scheme from your app.config.ts
-            icon: './assets/images/icon.png',
-          },
-        });
-
-        return {
-          publicKey: authorizationResult.accounts[0].address,
-          authToken: authorizationResult.auth_token,
-          label: authorizationResult.accounts[0].label,
-        };
-      });
-
-      if (result && result.publicKey) {
-        try {
-          // Address sent from the wallet is base64 encoded,
-          // convert it to base58
-          const base64Address = result.publicKey;
-          // Decode from base64 to get the raw bytes
-          const addressBytes = Buffer.from(base64Address, 'base64');
-
-          // Create pubkey from raw bytes
-          const publicKey = new PublicKey(addressBytes);
-          const address = publicKey.toBase58();
-          console.log('Connected wallet public key:', address);
-
-          // Create wallet data object
-          const walletData = {
-            address: address,
-            publicKey: address,
-            authToken: result.authToken,
-            username: result.label || address.substring(0, 6),
-            profilePicUrl: undefined,
-            attachmentData: {},
-          };
-
-          // Call onSuccess callback if provided
-          if (onSuccess) {
-            onSuccess(walletData);
+      
+      // Use our JavaScript bridge to connect to the wallet
+      const walletData = await SolanaMobileWalletAdapter.authorize(cluster) as any;
+      
+      try {
+        // Store the wallet data using the auth storage utility
+        const success = authStorage.setSolanaWalletAuth(walletData);
+        
+        if (success) {
+          console.log('✅ Wallet data stored successfully');
+          
+          // Log current auth state for debugging
+          const authState = authStorage.getAuthState();
+          console.log('Current auth state:', authState);
+          
+          // Call onLoginSuccess callback if provided, otherwise navigate directly
+          if (onLoginSuccess) {
+            onLoginSuccess();
+          } else {
+            router.replace('/driver/home');
           }
-
-          // For now, just log the success - you can add navigation later
-          console.log('Wallet connected successfully:', walletData);
-
-        } catch (error) {
-          console.error('Error processing wallet address:', error);
-          Alert.alert(
-            'Address Error',
-            'Failed to process wallet address. Please try again.',
-            [{ text: 'OK' }],
-          );
+        } else {
+          throw new Error('Failed to store wallet authentication data');
         }
+      } catch (storageError) {
+        console.error('❌ Error storing wallet data:', storageError);
+        Alert.alert(
+          'Storage Error',
+          'Failed to save wallet data. Please try again.',
+          [{ text: 'OK' }]
+        );
       }
     } catch (error) {
       console.error('Error connecting wallet:', error);
@@ -111,7 +80,7 @@ const LoginWithWallet: React.FC<LoginWithWalletProps> = ({
     } finally {
       setIsConnecting(false);
     }
-  }, [onSuccess]);
+  }, [onLoginSuccess, router]);
 
   return (
     <TouchableOpacity

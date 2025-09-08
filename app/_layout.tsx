@@ -1,3 +1,8 @@
+// Import polyfills for Solana
+import 'react-native-get-random-values';
+import { Buffer } from 'buffer';
+global.Buffer = Buffer;
+
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { useFonts } from 'expo-font'
@@ -7,6 +12,7 @@ import * as eva from '@eva-design/eva';
 import { ApplicationProvider } from '@ui-kitten/components';
 import { PaperProvider } from 'react-native-paper';
 import { SocketProvider } from '@/src/contexts/SocketContext';
+import { authStorage } from '@/src/utils/storage/authStorage';
 import { Colors } from '@/theme/colors';
 
 export default function _layout() {

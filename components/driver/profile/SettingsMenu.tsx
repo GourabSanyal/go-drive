@@ -12,9 +12,53 @@ import Note from "@/assets/images/profile/note.svg"
 import Manage from "@/assets/images/profile/manage.svg"
 import { getAuth, signOut } from "@react-native-firebase/auth"
 import { useRouter } from "expo-router"
+import { authStorage } from "@/src/utils/storage/authStorage"
+import { Alert } from "react-native"
 
 export default function SettingsMenu() {
     const router = useRouter()
+    
+    const handleLogout = async () => {
+        try {
+            // Get current auth provider to determine logout method
+            const authProvider = authStorage.getProvider();
+            console.log(`Logging out user with provider: ${authProvider}`);
+            
+            // Handle Firebase logout if using Firebase auth
+            if (authProvider === 'phone' || authProvider === 'google') {
+                await signOut(getAuth());
+                console.log("Firebase signOut successful");
+            }
+            
+            // Handle Solana wallet logout if using wallet auth
+            if (authProvider === 'mwa' || authProvider === 'solana') {
+                const authToken = authStorage.getWalletAuthToken();
+                if (authToken) {
+                    // In a real implementation, you would deauthorize the wallet
+                    // await SolanaWalletAdapter.deauthorize(authToken);
+                    console.log("Wallet deauthorized");
+                }
+            }
+            
+            // Clear all auth data regardless of provider
+            const clearSuccess = authStorage.clearAuth();
+            
+            if (clearSuccess) {
+                console.log("✅ Auth data cleared successfully");
+                // Navigate to login screen
+                router.replace("/auth/login");
+            } else {
+                throw new Error("Failed to clear auth data");
+            }
+        } catch (error) {
+            console.error("❌ Error during logout:", error);
+            Alert.alert(
+                "Logout Error",
+                "There was a problem logging out. Please try again.",
+                [{ text: "OK" }]
+            );
+        }
+    }
     const SETTINGS = [
         {
             icon: <Check width={24} height={24} />,
@@ -58,7 +102,7 @@ export default function SettingsMenu() {
                 )
             })}
             <TouchableOpacity
-                onPress={() => signOut(getAuth()).then(() => router.replace("/auth/signup"))}
+                onPress={handleLogout}
                 activeOpacity={1}
                 style={styles.settingsCard}>
                 <LogOut color={Colors.primary} />

@@ -16,6 +16,9 @@ import com.facebook.soloader.SoLoader
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
+// Import our custom Solana Mobile Wallet Adapter package
+// No need to import MobileWalletAdapterReactPackage as it's in the same package
+
 class MainApplication : Application(), ReactApplication {
 
   override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
@@ -24,7 +27,8 @@ class MainApplication : Application(), ReactApplication {
           override fun getPackages(): List<ReactPackage> {
             val packages = PackageList(this).packages
             // Packages that cannot be autolinked yet can be added manually here, for example:
-            // packages.add(new MyReactNativePackage());
+            // Add Solana Mobile Wallet Adapter package
+            packages.add(MobileWalletAdapterReactPackage())
             return packages
           }
 

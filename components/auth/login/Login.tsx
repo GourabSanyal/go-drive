@@ -1,13 +1,10 @@
-import { TouchableOpacity, View } from 'react-native';
+import { View, Alert } from 'react-native';
 import { CheckBox, Input, Text } from '@ui-kitten/components';
 import { styles } from '../styles';
 import Margin from '@/components/ui/Margin';
-import GoogleIcon from '@/assets/images/auth/google.svg';
-import FacebookIcon from '@/assets/images/auth/facebook.svg';
-import AppleIcon from '@/assets/images/auth/apple.svg';
 import CustomButton from '@/components/ui/CustomButton';
 import { Colors } from '@/theme/colors';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter, useSegments } from 'expo-router';
 import {
     GoogleAuthProvider,
@@ -15,16 +12,11 @@ import {
     signInWithCredential,
     signInWithPhoneNumber
 } from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import {
-    addDoc,
-    collection,
-    getDocs,
     getFirestore,
-    query,
-    where
 } from '@react-native-firebase/firestore';
 import { storage } from '@/src/utils/storage/mmkv';
+import { authStorage } from '@/src/utils/storage/authStorage';
 import LoginWithWallet from './LoginWithWallet';
 
 const Login = () => {
@@ -33,13 +25,9 @@ const Login = () => {
     const db = getFirestore()
     const [value, setValue] = useState('');
     const [checked, setChecked] = useState(true);
-    // If null, no SMS has been sent
     const [confirm, setConfirm] = useState<any | null>(null);
-    // verification code (OTP - One-Time-Passcode)
     const [code, setCode] = useState('');
-    // Set an initializing state whilst Firebase connects
 
-    // Handle the button press
     async function handleSignInWithPhoneNumber(phoneNumber: string) {
         try {
             const confirmation = await signInWithPhoneNumber(getAuth(), `+91${phoneNumber}`);
@@ -57,86 +45,55 @@ const Login = () => {
         }
     }
 
-    const handleSolanaWalletSuccess = (walletData: any) => {
-        console.log('Solana wallet connected:', walletData);
-        // Store wallet data in MMKV for now
-        storage.set("provider", "mwa");
-        storage.set("address", walletData.address);
-        storage.set("isLoggedIn", true);
-        storage.set("profilePicUrl", walletData.profilePicUrl || null);
-        storage.set("username", walletData.username || walletData.address.substring(0, 6));
-        storage.set("attachmentData", JSON.stringify(walletData.attachmentData || {}));
-        storage.set("walletAuthToken", walletData.authToken);
-        
-        // Navigate to home
+    // Simplified callback that only handles navigation after successful login
+    const handleLoginSuccess = () => {
+        console.log("✅ Login successful, navigating to home");
         router.replace("/driver/home");
     };
 
-    async function onGoogleButtonPress() {
-        try {
-            // Check if your device supports Google Play
-            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-            // Get the users ID token
-            const signInResult = await GoogleSignin.signIn();
-            const email = signInResult.data?.user.email
-            const photo = signInResult.data?.user.photo
-            const name = signInResult.data?.user.name
-            const userId = signInResult.data?.user.id
-            // Try the new style of google-sign in result, from v13+ of that module
-            let idToken = signInResult.data?.idToken;
-            if (!idToken) {
-                // if you are using older versions of google-signin, try old style result
-                idToken = signInResult.data?.idToken;
-            }
-            if (!idToken || !name || !userId) {
-                throw new Error('No ID token & name found');
-            }
+    // async function onGoogleButtonPress() {
+    //     try {
+    //         // Check if your device supports Google Play
+    //         await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    //         // Get the users ID token
+    //         const signInResult = await GoogleSignin.signIn();
+    //         const email = signInResult.data?.user.email
+    //         const photo = signInResult.data?.user.photo
+    //         const name = signInResult.data?.user.name
+    //         const userId = signInResult.data?.user.id
+    //         // Try the new style of google-sign in result, from v13+ of that module
+    //         let idToken = signInResult.data?.idToken;
+    //         if (!idToken) {
+    //             // if you are using older versions of google-signin, try old style result
+    //             idToken = signInResult.data?.idToken;
+    //         }
+    //         if (!idToken || !name || !userId) {
+    //             throw new Error('No ID token & name found');
+    //         }
 
-            storage.set("idToken", idToken)
-            storage.set("name", name)
-            storage.set("userId", userId)
+    //         storage.set("idToken", idToken)
+    //         storage.set("name", name)
+    //         storage.set("userId", userId)
 
-            const existingUser = await getDocs(
-                query(
-                    collection(db, 'drivers'),
-                    where('email', '==', email)
-                )
-            )
-            // Create user if not exists
-            if (!existingUser.docs[0]) {
-                await addDoc(collection(db, 'drivers'), { userId, name, email, photo })
-            }
-            // Create a Google credential with the token
-            const googleCredential = GoogleAuthProvider.credential(signInResult.data!.idToken);
-            // Sign-in the user with the credential
-            return signInWithCredential(getAuth(), googleCredential);
-        } catch (error) {
-            console.error(error)
-            throw error
-        }
-    }
-
-    // async function onFacebookButtonPress() {
-    //     // Attempt login with permissions
-    //     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-
-    //     if (result.isCancelled) {
-    //         throw 'User cancelled the login process';
+    //         const existingUser = await getDocs(
+    //             query(
+    //                 collection(db, 'drivers'),
+    //                 where('email', '==', email)
+    //             )
+    //         )
+    //         // Create user if not exists
+    //         if (!existingUser.docs[0]) {
+    //             await addDoc(collection(db, 'drivers'), { userId, name, email, photo })
+    //         }
+    //         // Create a Google credential with the token
+    //         const googleCredential = GoogleAuthProvider.credential(signInResult.data!.idToken);
+    //         // Sign-in the user with the credential
+    //         return signInWithCredential(getAuth(), googleCredential);
+    //     } catch (error) {
+    //         console.error(error)
+    //         throw error
     //     }
-    //     // Once signed in, get the users AccessToken
-    //     const data = await AccessToken.getCurrentAccessToken();
-
-    //     if (!data) {
-    //         throw 'Something went wrong obtaining access token';
-    //     }
-
-    //     // Create a Firebase credential with the AccessToken
-    //     const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
-
-    //     // Sign-in the user with the credential
-    //     return signInWithCredential(getAuth(), facebookCredential);
     // }
-
     return (
         <View style={styles.container}>
             <Text style={styles.h1}>
@@ -184,25 +141,12 @@ const Login = () => {
                 Log In with
             </Text>
             <View style={styles.social}>
-                <LoginWithWallet onSuccess={handleSolanaWalletSuccess} />
-                {/* <TouchableOpacity
-                    onPress={() => onGoogleButtonPress().then(() => router.replace("/driver/home"))}
-                    activeOpacity={0.95}>
-                    <GoogleIcon width={50} height={50} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    activeOpacity={0.95}>
-                    <FacebookIcon width={50} height={50} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    activeOpacity={0.95}>
-                    <AppleIcon width={50} height={50} />
-                </TouchableOpacity> */}
+                <LoginWithWallet onLoginSuccess={handleLoginSuccess} />
             </View>
             <Text style={styles.h2_bold}>
                 Don't have an account?
                 <Text
-                    onPress={() => router.push("/auth/login")}
+                    onPress={() => router.push("/auth/signup")}
                     style={[styles.h2_bold, styles.underline]}>
                     Sign Up
                 </Text>
