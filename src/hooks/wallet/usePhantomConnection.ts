@@ -3,8 +3,8 @@ import { Linking, Platform } from 'react-native';
 import { PublicKey, Keypair } from '@solana/web3.js';
 import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
-import { authStorage } from '@/src/utils/storage/authStorage';
 import { storage } from '@/src/utils/storage/mmkv';
+import { useSession, WalletSession } from '../session';
 
 export type PhantomConnectionState = {
   isConnecting: boolean;
@@ -13,13 +13,6 @@ export type PhantomConnectionState = {
   isConnected: boolean;
 };
 
-export interface PhantomSession {
-  publicKey: string;    // Wallet address
-  sessionToken: string; // Session token from Phantom
-  connectedAt: number;  // Timestamp
-}
-
-const PHANTOM_SESSION_KEY = 'phantom_session';
 const PHANTOM_KEYPAIR_KEY = 'phantom_keypair';
 
 export const usePhantomConnection = () => {
@@ -30,34 +23,8 @@ export const usePhantomConnection = () => {
     isConnected: false,
   });
 
-  // Session management functions
-  const saveSession = useCallback((session: PhantomSession) => {
-    try {
-      storage.set(PHANTOM_SESSION_KEY, JSON.stringify(session));
-      console.log('✅ Phantom session saved:', session.publicKey);
-    } catch (error) {
-      console.error('❌ Error saving session:', error);
-    }
-  }, []);
-
-  const getSession = useCallback((): PhantomSession | null => {
-    try {
-      const sessionStr = storage.getString(PHANTOM_SESSION_KEY);
-      return sessionStr ? JSON.parse(sessionStr) : null;
-    } catch (error) {
-      console.error('❌ Error retrieving session:', error);
-      return null;
-    }
-  }, []);
-
-  const clearSession = useCallback(() => {
-    try {
-      storage.delete(PHANTOM_SESSION_KEY);
-      console.log('✅ Phantom session cleared');
-    } catch (error) {
-      console.error('❌ Error clearing session:', error);
-    }
-  }, []);
+  // Use the centralized session management
+  const { saveSessionWithAuth, getSession, clearSession } = useSession();
 
   // Keypair management functions
   const storeKeypair = useCallback((keypair: Keypair) => {
@@ -67,12 +34,8 @@ export const usePhantomConnection = () => {
         secretKey: bs58.encode(keypair.secretKey)
       };
       storage.set(PHANTOM_KEYPAIR_KEY, JSON.stringify(keypairData));
-      console.log('✅ Keypair stored:', {
-        publicKey: keypairData.publicKey,
-        secretKeyLength: keypair.secretKey.length
-      });
     } catch (error) {
-      console.error('❌ Error storing keypair:', error);
+      console.error('Error storing keypair:', error);
     }
   }, []);
 
@@ -80,27 +43,16 @@ export const usePhantomConnection = () => {
     try {
       const keypairStr = storage.getString(PHANTOM_KEYPAIR_KEY);
       if (!keypairStr) {
-        console.log('❌ No keypair found in storage');
         return null;
       }
       
       const keypairData = JSON.parse(keypairStr);
-      console.log('🔍 Retrieved keypair data from storage:', {
-        publicKey: keypairData.publicKey,
-        secretKeyLength: keypairData.secretKey.length
-      });
-      
       const publicKey = new PublicKey(keypairData.publicKey);
       const secretKey = bs58.decode(keypairData.secretKey);
       
-      console.log('🔍 Decoded keypair:', {
-        publicKey: publicKey.toBase58(),
-        secretKeyLength: secretKey.length
-      });
-      
       return new Keypair({ publicKey: publicKey.toBytes(), secretKey });
     } catch (error) {
-      console.error('❌ Error retrieving keypair:', error);
+      console.error('Error retrieving keypair:', error);
       return null;
     }
   }, []);
@@ -108,9 +60,8 @@ export const usePhantomConnection = () => {
   const clearKeypair = useCallback(() => {
     try {
       storage.delete(PHANTOM_KEYPAIR_KEY);
-      console.log('✅ Keypair cleared');
     } catch (error) {
-      console.error('❌ Error clearing keypair:', error);
+      console.error('Error clearing keypair:', error);
     }
   }, []);
 
@@ -158,14 +109,10 @@ export const usePhantomConnection = () => {
     try {
       setConnectionState(prev => ({ ...prev, isCheckingConnection: true, error: null }));
 
-      console.log('🔍 Parsing deep link URL:', url);
-
       // Parse URL parameters
       const urlParts = url.split('?');
       const queryString = urlParts[1] || '';
       const params = new URLSearchParams(queryString);
-      
-      console.log('📋 URL parameters:', Object.fromEntries(params.entries()));
       
       // Check for error
       if (params.has('errorCode')) {
@@ -188,17 +135,8 @@ export const usePhantomConnection = () => {
         throw new Error('No keypair available for decryption');
       }
       
-      console.log('🔑 Retrieved keypair from storage:', {
-        publicKey: keypair.publicKey.toBase58(),
-        secretKeyLength: keypair.secretKey.length
-      });
-      
       // Create shared secret and decrypt data
       const phantomPubKey = new PublicKey(phantomPublicKey);
-      console.log('🔐 Creating shared secret with:', {
-        phantomPublicKey: phantomPubKey.toBase58(),
-        ourSecretKeyLength: keypair.secretKey.length
-      });
       
       // Use the same keypair that generated the dapp_encryption_public_key
       // Convert the stored Ed25519 keypair to x25519 format
@@ -208,33 +146,26 @@ export const usePhantomConnection = () => {
       // Create shared secret using Phantom's public key and our private key
       const phantomPubKeyBytes = bs58.decode(phantomPublicKey);
       const sharedSecretDapp = nacl.box.before(phantomPubKeyBytes, dappKeyPair.secretKey);
-      console.log('🔐 Shared secret created, length:', sharedSecretDapp.length);
       
       try {
         const decryptedData = decryptPayload(data, nonce, sharedSecretDapp);
         
+        console.log('🔍 Decrypted data from Phantom:', decryptedData);
+        
         // Create session data
-        const session: PhantomSession = {
+        const session: WalletSession = {
           publicKey: decryptedData.public_key,
           sessionToken: decryptedData.session,
-          connectedAt: Date.now()
+          connectedAt: Date.now(),
+          walletType: 'phantom'
         };
         
-        // Save session immediately
-        saveSession(session);
+        console.log('📝 Created session data:', session);
         
-        // Also store in auth storage for compatibility
-        const walletData = {
-          address: decryptedData.public_key,
-          publicKey: decryptedData.public_key,
-          authToken: decryptedData.session,
-          username: `Phantom_${decryptedData.public_key.substring(0, 6)}`,
-        };
-        
-        const success = await authStorage.setSolanaWalletAuth(walletData);
+        // Save session using centralized session management
+        const success = await saveSessionWithAuth(session);
         
         if (success) {
-          console.log('✅ Phantom session and wallet data stored successfully');
           setConnectionState(prev => ({
             ...prev,
             isConnected: true,
@@ -247,7 +178,7 @@ export const usePhantomConnection = () => {
           throw new Error('Failed to store wallet data');
         }
       } catch (decryptError) {
-        console.error('❌ Decryption failed:', decryptError);
+        console.error('Decryption failed:', decryptError);
         throw new Error(`Decryption failed: ${decryptError instanceof Error ? decryptError.message : 'Unknown error'}`);
       }
     } catch (error) {
@@ -259,7 +190,7 @@ export const usePhantomConnection = () => {
         error: error instanceof Error ? error.message : 'Failed to connect with Phantom'
       }));
     }
-  }, [decryptPayload, saveSession, getStoredKeypair, clearKeypair]);
+  }, [decryptPayload, saveSessionWithAuth, getStoredKeypair, clearKeypair]);
 
   // Initialize connection with Phantom
   const connect = useCallback(async () => {
@@ -287,7 +218,6 @@ export const usePhantomConnection = () => {
         `app_url=${encodeURIComponent('https://go-drive.app')}&` +
         `redirect_link=${encodeURIComponent('drive://')}`;
       
-      console.log('Opening Phantom connect URL:', connectUrl);
       
       // Open Phantom
       const canOpen = await Linking.canOpenURL(connectUrl);
@@ -308,10 +238,8 @@ export const usePhantomConnection = () => {
 
   // Set up deep link listener
   useEffect(() => {
-    console.log('🔧 Setting up deep link listener...');
     
     const handleUrl = (event: { url: string }) => {
-      console.log('🔗 Deep link received:', event.url);
       handleConnectionResponse(event.url);
     };
 
@@ -319,14 +247,12 @@ export const usePhantomConnection = () => {
     
     // Check if app was opened with a deep link
     Linking.getInitialURL().then((url) => {
-      console.log('🔗 Initial URL:', url);
       if (url) {
         handleConnectionResponse(url);
       }
     });
 
     return () => {
-      console.log('🔧 Removing deep link listener');
       subscription?.remove();
     };
   }, [handleConnectionResponse]);
@@ -345,10 +271,9 @@ export const usePhantomConnection = () => {
             isConnected: true,
             error: null
           }));
-          // Clear keypair after successful connection
           clearKeypair();
         }
-      }, 1000); // Check every second
+      }, 1000); 
     }
 
     return () => {

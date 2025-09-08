@@ -8,6 +8,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { FirebaseAuthTypes, getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 import { storage } from '@/src/utils/storage/mmkv';
 import { authStorage } from '@/src/utils/storage/authStorage';
+import { useSession } from '@/src/hooks/session';
 
 GoogleSignin.configure({
     webClientId: '958848343136-qvt997jbeo3o4j2cv50j8cn7msjc76tu.apps.googleusercontent.com',
@@ -15,6 +16,7 @@ GoogleSignin.configure({
 
 export default function Index() {
     const router = useRouter();
+    const { getSession } = useSession();
 
     const [initializing, setInitializing] = useState(true);
     const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
@@ -36,16 +38,17 @@ export default function Index() {
         // Check authentication using the auth storage utility
         const authState = authStorage.getAuthState();
         const hasIdToken = storage.getString("idToken");
+        const walletSession = getSession();
         
         // Check if user is authenticated via Firebase OR Solana wallet
-        if ((user && hasIdToken) || authState.isLoggedIn) {
+        if ((user && hasIdToken) || authState.isLoggedIn || walletSession) {
             console.log("User authenticated, navigating to home");
             router.replace("/driver/home");
         } else {
             console.log("User not authenticated, navigating to login");
             router.replace("/auth/login");
         }
-    }, [user, initializing])
+    }, [user, initializing, getSession])
 
     // useEffect(() => {
     //     setTimeout(() => {

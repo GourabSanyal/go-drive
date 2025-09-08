@@ -37,63 +37,11 @@ const Login = () => {
         }
     }
 
-    async function confirmCode() {
-        try {
-            await confirm!.confirm(code);
-        } catch (error) {
-            console.error('Invalid code');
-        }
-    }
 
-    // Simplified callback that only handles navigation after successful login
     const handleLoginSuccess = () => {
-        console.log("✅ Login successful, navigating to home");
         router.replace("/driver/home");
     };
 
-    // async function onGoogleButtonPress() {
-    //     try {
-    //         // Check if your device supports Google Play
-    //         await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    //         // Get the users ID token
-    //         const signInResult = await GoogleSignin.signIn();
-    //         const email = signInResult.data?.user.email
-    //         const photo = signInResult.data?.user.photo
-    //         const name = signInResult.data?.user.name
-    //         const userId = signInResult.data?.user.id
-    //         // Try the new style of google-sign in result, from v13+ of that module
-    //         let idToken = signInResult.data?.idToken;
-    //         if (!idToken) {
-    //             // if you are using older versions of google-signin, try old style result
-    //             idToken = signInResult.data?.idToken;
-    //         }
-    //         if (!idToken || !name || !userId) {
-    //             throw new Error('No ID token & name found');
-    //         }
-
-    //         storage.set("idToken", idToken)
-    //         storage.set("name", name)
-    //         storage.set("userId", userId)
-
-    //         const existingUser = await getDocs(
-    //             query(
-    //                 collection(db, 'drivers'),
-    //                 where('email', '==', email)
-    //             )
-    //         )
-    //         // Create user if not exists
-    //         if (!existingUser.docs[0]) {
-    //             await addDoc(collection(db, 'drivers'), { userId, name, email, photo })
-    //         }
-    //         // Create a Google credential with the token
-    //         const googleCredential = GoogleAuthProvider.credential(signInResult.data!.idToken);
-    //         // Sign-in the user with the credential
-    //         return signInWithCredential(getAuth(), googleCredential);
-    //     } catch (error) {
-    //         console.error(error)
-    //         throw error
-    //     }
-    // }
     return (
         <View style={styles.container}>
             <Text style={styles.h1}>
@@ -121,12 +69,10 @@ const Login = () => {
             </View>
             <Margin margin={30} />
             <CustomButton
-                // disabled={!value || value.length == 0}
                 onPress={() => {
                     router.push("/auth/otp")
                     handleSignInWithPhoneNumber(value)
-                }
-                }
+                }}
                 status="primary">
                 Login
             </CustomButton>

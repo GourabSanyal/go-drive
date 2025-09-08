@@ -3,7 +3,7 @@ import { StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import SolanaIcon from '@/assets/images/icons/solana.svg';
 import LoadingButton from '@/components/ui/LoadingButton';
-import { usePhantomConnection } from '@/src/hooks/usePhantomConnection';
+import { usePhantomConnection } from '@/src/hooks/wallet';
 
 interface PhantomConnectProps {
   disabled?: boolean;

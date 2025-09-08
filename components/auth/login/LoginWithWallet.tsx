@@ -17,7 +17,7 @@ import SolanaIcon from '@/assets/images/icons/solana.svg';
 
 interface LoginWithWalletProps {
   disabled?: boolean;
-  onLoginSuccess?: () => void; // Simplified callback that only handles navigation
+  onLoginSuccess?: () => void;
 }
 
 const LoginWithWallet: React.FC<LoginWithWalletProps> = ({
@@ -28,7 +28,6 @@ const LoginWithWallet: React.FC<LoginWithWalletProps> = ({
   const [isConnecting, setIsConnecting] = useState(false);
 
   const getSolanaCluster = (): Cluster => {
-    // For now, using devnet - you can make this configurable later
     return 'devnet' as Cluster;
   };
 
@@ -36,24 +35,13 @@ const LoginWithWallet: React.FC<LoginWithWalletProps> = ({
     try {
       setIsConnecting(true);
       
-      // Get the Solana cluster to connect to
       const cluster = getSolanaCluster();
-      
-      // Use our JavaScript bridge to connect to the wallet
       const walletData = await SolanaMobileWalletAdapter.authorize(cluster) as any;
       
       try {
-        // Store the wallet data using the auth storage utility
         const success = authStorage.setSolanaWalletAuth(walletData);
         
         if (success) {
-          console.log('✅ Wallet data stored successfully');
-          
-          // Log current auth state for debugging
-          const authState = authStorage.getAuthState();
-          console.log('Current auth state:', authState);
-          
-          // Call onLoginSuccess callback if provided, otherwise navigate directly
           if (onLoginSuccess) {
             onLoginSuccess();
           } else {
@@ -63,7 +51,7 @@ const LoginWithWallet: React.FC<LoginWithWalletProps> = ({
           throw new Error('Failed to store wallet authentication data');
         }
       } catch (storageError) {
-        console.error('❌ Error storing wallet data:', storageError);
+        console.error('Error storing wallet data:', storageError);
         Alert.alert(
           'Storage Error',
           'Failed to save wallet data. Please try again.',
