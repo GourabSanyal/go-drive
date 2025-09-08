@@ -17,7 +17,7 @@ import {
 } from '@react-native-firebase/firestore';
 import { storage } from '@/src/utils/storage/mmkv';
 import { authStorage } from '@/src/utils/storage/authStorage';
-import LoginWithWallet from './LoginWithWallet';
+import PhantomConnect from './PhantomConnect';
 
 const Login = () => {
     const router = useRouter()
@@ -107,12 +107,12 @@ const Login = () => {
                 size="large"
                 value={value}
                 style={styles.input}
-                onChangeText={nextValue => setValue(nextValue)}
+                onChangeText={(nextValue: string) => setValue(nextValue)}
             />
             <View style={{ marginTop: 30 }}>
                 <CheckBox
                     checked={checked}
-                    onChange={nextChecked => setChecked(nextChecked)}
+                    onChange={(nextChecked: boolean) => setChecked(nextChecked)}
                 >
                     <Text>
                         <Text style={styles.checkbox} >By signing up. you agree to the</Text> <Text style={[styles.checkbox, { textDecorationLine: 'underline', color: Colors.primary }]}>Terms of service</Text> and <Text style={[styles.checkbox, { textDecorationLine: 'underline', color: Colors.primary }]}>Privacy policy</Text>.
@@ -141,7 +141,7 @@ const Login = () => {
                 Log In with
             </Text>
             <View style={styles.social}>
-                <LoginWithWallet onLoginSuccess={handleLoginSuccess} />
+                <PhantomConnect onLoginSuccess={handleLoginSuccess} />
             </View>
             <Text style={styles.h2_bold}>
                 Don't have an account?
