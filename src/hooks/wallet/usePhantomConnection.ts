@@ -4,14 +4,8 @@ import { PublicKey, Keypair } from '@solana/web3.js';
 import * as nacl from 'tweetnacl';
 import bs58 from 'bs58';
 import { storage } from '@/src/utils/storage/mmkv';
-import { useSession, WalletSession } from '../session';
-
-export type PhantomConnectionState = {
-  isConnecting: boolean;
-  isCheckingConnection: boolean;
-  error: string | null;
-  isConnected: boolean;
-};
+import { useSession } from '../session';
+import { PhantomConnectionState, WalletSession } from '@/src/types';
 
 const PHANTOM_KEYPAIR_KEY = 'phantom_keypair';
 

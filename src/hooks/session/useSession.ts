@@ -1,13 +1,7 @@
 import { useCallback } from 'react';
 import { storage } from '@/src/utils/storage/mmkv';
 import { authStorage } from '@/src/utils/storage/authStorage';
-
-export interface WalletSession {
-  publicKey: string;
-  sessionToken: string;
-  connectedAt: number; 
-  walletType: 'phantom' | 'solflare' | 'backpack' | 'other';
-}
+import { WalletSession, WalletAuthData } from '@/src/types';
 
 const SESSION_KEY = 'wallet_session';
 
@@ -47,7 +41,7 @@ export const useSession = () => {
       console.log('💾 Saving session to storage:', session);
       saveSession(session);
       
-      const walletData = {
+      const walletData: WalletAuthData = {
         address: session.publicKey,
         publicKey: session.publicKey,
         authToken: session.sessionToken,
