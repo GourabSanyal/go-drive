@@ -1,28 +1,29 @@
 import { Colors } from '@/theme/colors';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
         backgroundColor: '#0D0E22',
-        paddingTop: 70,
-        paddingLeft: 30,
-        paddingRight: 30,
+        paddingTop: Platform.OS === 'ios' ? hp(8) : hp(6),
+        paddingLeft: wp(8),
+        paddingRight: wp(8),
     },
     input: {
-        paddingTop: 30,
+        paddingTop: hp(3.5),
         fontFamily: 'MontserratRegular',
         backgroundColor: '#0D0E22',
+        fontSize: RFValue(16),
     },
     orContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 20,
-        marginBottom: 50,
-        marginTop: 50,
+        gap: wp(5),
+        marginBottom: hp(6),
+        marginTop: hp(6),
     },
     orDivider: {
         height: 1,
@@ -31,50 +32,48 @@ export const styles = StyleSheet.create({
     },
     h1: {
         color: '#fff',
-        fontSize: 35,
-        marginBottom: 5,
+        fontSize: RFValue(35),
+        marginBottom: hp(0.6),
         fontFamily: 'MontserratBold',
         textAlign: 'center',
     },
     h2: {
         color: '#fff',
-        fontSize: 16,
-        marginBottom: 30,
+        fontSize: RFValue(16),
+        marginBottom: hp(3.5),
         fontFamily: 'MontserratRegular',
         textAlign: 'center',
     },
     h2_bold: {
         color: '#fff',
-        fontSize: 18,
-        marginBottom: 30,
+        fontSize: RFValue(18),
+        marginBottom: hp(3.5),
         fontFamily: 'MontserratSemiBold',
         textAlign: 'center',
     },
     button: {
-        marginBottom: 20,
-        marginTop: 30,
-        // fontFamily: 'MontserratBold',
+        marginBottom: hp(2.4),
+        marginTop: hp(3.5),
         width: '100%',
-        // borderRadius: 10,
     },
     underline: { color: Colors.primary, textDecorationLine: 'underline' },
     image: {
-        width: 50,
-        height: 50,
+        width: wp(12.5),
+        height: wp(12.5),
     },
     social: {
         flexDirection: 'row',
         justifyContent: 'center',
-        gap: 30,
+        gap: wp(7.5),
         height: 'auto',
-        marginBottom: 30,
+        marginBottom: hp(3.5),
     },
     checkbox: {
-        fontSize: 14,
+        fontSize: RFValue(14),
         fontFamily: 'MontserratMedium',
     },
     modalcontainer: {
-        minHeight: 192,
+        minHeight: hp(23),
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
