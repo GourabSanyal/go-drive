@@ -13,3 +13,9 @@ export * from "./driver/schema/driver.vehicleStatus";
 export * from "./driver/schema/driver.rating";
 // types
 export * from "./driver/types/driver.types";
+
+// Wallet
+export * from "./wallet";
+
+// Session
+export * from "./session";
