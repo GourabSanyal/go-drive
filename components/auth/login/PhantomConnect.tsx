@@ -5,15 +5,7 @@ import { usePhantomConnection } from '@/src/hooks/wallet/phantom/usePhantomConne
 import { useSession } from '@/src/hooks/session';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
-interface PhantomConnectProps {
-  disabled?: boolean;
-  onLoginSuccess?: () => void;
-}
-
-const PhantomConnect: React.FC<PhantomConnectProps> = ({
-  disabled = false,
-  onLoginSuccess,
-}) => {
+const PhantomConnect: React.FC = () => {
   const router = useRouter();
   const { connect, connectionState } = usePhantomConnection();
   const { getSession } = useSession();
@@ -33,11 +25,7 @@ const PhantomConnect: React.FC<PhantomConnectProps> = ({
       const session = getSession();
       if (session) {
         console.log('✅ Session saved successfully, redirecting...');
-        if (onLoginSuccess) {
-          onLoginSuccess();
-        } else {
-          router.replace('/driver/home');
-        }
+        router.replace('/driver/home');
       } else {
         Alert.alert(
           'Connection Error 2',
@@ -46,16 +34,16 @@ const PhantomConnect: React.FC<PhantomConnectProps> = ({
         );
       }
     }
-  }, [connectionState, onLoginSuccess, router, getSession]);
+  }, [connectionState, router, getSession]);
 
   return (
     <TouchableOpacity
       style={[
         styles.circularButton,
-        { opacity: disabled || connectionState.isConnecting || connectionState.isCheckingConnection ? 0.7 : 1 }
+        { opacity: connectionState.isConnecting || connectionState.isCheckingConnection ? 0.7 : 1 }
       ]}
       activeOpacity={0.8}
-      disabled={disabled || connectionState.isConnecting || connectionState.isCheckingConnection}
+      disabled={connectionState.isConnecting || connectionState.isCheckingConnection}
       onPress={connect}
     >
       {connectionState.isConnecting || connectionState.isCheckingConnection ? (

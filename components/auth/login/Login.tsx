@@ -35,9 +35,6 @@ const Login = () => {
     }
   }
 
-  const handleLoginSuccess = () => {
-    router.replace("/driver/home");
-  };
 
   return (
     <View style={styles.container}>
@@ -99,7 +96,7 @@ const Login = () => {
         Log In with
       </Text>
       <View style={styles.social}>
-        <PhantomConnect onLoginSuccess={handleLoginSuccess} />
+        <PhantomConnect />
       </View>
     </View>
   );
