@@ -280,8 +280,5 @@ export const usePhantomConnection = () => {
   return {
     connect,
     connectionState,
-    getSession,
-    clearSession,
-    clearKeypair,
   };
 };
