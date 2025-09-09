@@ -1,1 +1,1 @@
-export { usePhantomConnection } from './usePhantomConnection';
+export { usePhantomConnection } from './phantom/usePhantomConnection';

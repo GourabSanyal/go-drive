@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Alert, TouchableOpacity, View, ActivityIndicator, Image, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { usePhantomConnection } from '@/src/hooks/wallet';
+import { usePhantomConnection } from '@/src/hooks/wallet/phantom/usePhantomConnection';
 import { useSession } from '@/src/hooks/session';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
