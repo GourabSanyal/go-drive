@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Alert } from 'react-native';
+import { StyleSheet, Alert, TouchableOpacity, View, ActivityIndicator, Image, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import SolanaIcon from '@/assets/images/icons/solana.svg';
-import LoadingButton from '@/components/ui/LoadingButton';
 import { usePhantomConnection } from '@/src/hooks/wallet';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 interface PhantomConnectProps {
   disabled?: boolean;
@@ -48,20 +47,46 @@ const PhantomConnect: React.FC<PhantomConnectProps> = ({
   }, [connectionState, onLoginSuccess, router, getSession]);
 
   return (
-    <LoadingButton
+    <TouchableOpacity
+      style={[
+        styles.circularButton,
+        { opacity: disabled || connectionState.isConnecting || connectionState.isCheckingConnection ? 0.7 : 1 }
+      ]}
+      activeOpacity={0.8}
+      disabled={disabled || connectionState.isConnecting || connectionState.isCheckingConnection}
       onPress={connect}
-      isLoading={connectionState.isConnecting || connectionState.isCheckingConnection}
-      disabled={disabled}
-      buttonText="Connect with Phantom"
-      loadingText="Connecting..."
-      icon={<SolanaIcon width={24} height={24} style={styles.icon} />}
-    />
+    >
+      {connectionState.isConnecting || connectionState.isCheckingConnection ? (
+        <ActivityIndicator size="small" color="#FFFFFF" />
+      ) : (
+        <Image
+          source={require('@/assets/images/icons/phantom/phantom-wallet-icon.png')}
+          style={styles.phantomIcon}
+          resizeMode="contain"
+        />
+      )}
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  icon: {
-    marginRight: 10,
+  circularButton: {
+    width: wp(20),
+    height: wp(20), 
+    borderRadius: wp(10),
+    backgroundColor: '#202020',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: hp(0.5) },
+    shadowOpacity: 0.2,
+    shadowRadius: wp(2),
+    elevation: 5,
+    marginVertical: hp(1.2),
+  },
+  phantomIcon: {
+    width: wp(12.5), 
+    height: wp(12.5), 
   },
 });
 
