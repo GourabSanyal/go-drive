@@ -64,9 +64,13 @@ export const styles = StyleSheet.create({
     social: {
         flexDirection: 'row',
         justifyContent: 'center',
-        gap: wp(7.5),
+        alignItems: 'center',
+        gap: wp(8),
         height: 'auto',
         marginBottom: hp(3.5),
+        paddingHorizontal: wp(10),
+        minHeight: wp(25),
+        width: '100%',
     },
     checkbox: {
         fontSize: RFValue(14),
