@@ -13,6 +13,8 @@ import {
 } from "@react-native-firebase/auth";
 import { getFirestore } from "@react-native-firebase/firestore";
 import PhantomConnect from "./PhantomConnect";
+import SolflareConnect from "./solflare/SolflareConnect";
+import BackpackConnect from "./BackpackConnect";
 
 const Login = () => {
   const router = useRouter();
@@ -97,6 +99,8 @@ const Login = () => {
       </Text>
       <View style={styles.social}>
         <PhantomConnect />
+        <SolflareConnect />
+        <BackpackConnect />
       </View>
     </View>
   );
