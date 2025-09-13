@@ -37,6 +37,7 @@
     "@solana-mobile/mobile-wallet-adapter-protocol": "2.1.0",
     "@solana-mobile/mobile-wallet-adapter-protocol-web3js": "2.1.0",
     "@solana/web3.js": "^1.98.4",
+    "@solflare-wallet/sdk": "^1.4.2",
     "@ui-kitten/components": "^5.3.1",
     "bs58": "^6.0.0",
     "buffer": "^6.0.3",

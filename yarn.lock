@@ -4344,6 +4344,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@solflare-wallet/sdk@npm:^1.4.2":
+  version: 1.4.2
+  resolution: "@solflare-wallet/sdk@npm:1.4.2"
+  dependencies:
+    bs58: "npm:^5.0.0"
+    eventemitter3: "npm:^5.0.1"
+    uuid: "npm:^9.0.0"
+  peerDependencies:
+    "@solana/web3.js": "*"
+  checksum: 10c0/5779f03662d826ea85b606467e956f452759111a7ad34da0f7162f9c5882ac1828d575cc1be9ce61ba40c41ae62886e859718672adec15f8104ffdd8a00ebac5
+  languageName: node
+  linkType: hard
+
 "@svgr/babel-plugin-add-jsx-attribute@npm:8.0.0":
   version: 8.0.0
   resolution: "@svgr/babel-plugin-add-jsx-attribute@npm:8.0.0"
@@ -7458,6 +7471,7 @@ __metadata:
     "@solana-mobile/mobile-wallet-adapter-protocol": "npm:2.1.0"
     "@solana-mobile/mobile-wallet-adapter-protocol-web3js": "npm:2.1.0"
     "@solana/web3.js": "npm:^1.98.4"
+    "@solflare-wallet/sdk": "npm:^1.4.2"
     "@types/node": "npm:^22.15.14"
     "@types/react": "npm:~18.3.12"
     "@types/react-native-get-random-values": "npm:^1"
@@ -15978,7 +15992,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:9.0.1, uuid@npm:^9.0.1":
+"uuid@npm:9.0.1, uuid@npm:^9.0.0, uuid@npm:^9.0.1":
   version: 9.0.1
   resolution: "uuid@npm:9.0.1"
   bin:
