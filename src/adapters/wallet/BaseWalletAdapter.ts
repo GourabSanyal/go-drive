@@ -204,13 +204,13 @@ export abstract class BaseWalletAdapter {
     });
     
     // Get stored keypair for decryption
-    const keypair = this.getStoredKeypair();
+    let keypair = this.getStoredKeypair();
     if (!keypair) {
       console.log('🔑 No keypair found, attempting to regenerate...');
       // Try to regenerate keypair as fallback
       this.generateAndStoreKeypair();
-      const regeneratedKeypair = this.getStoredKeypair();
-      if (!regeneratedKeypair) {
+      keypair = this.getStoredKeypair();
+      if (!keypair) {
         throw new Error(`No keypair available for decryption in ${this.config.type} wallet`);
       }
       console.log('✅ Keypair regenerated successfully');
