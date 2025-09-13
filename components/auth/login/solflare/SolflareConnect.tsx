@@ -11,12 +11,13 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { useSolflareConnection } from "@/src/hooks/wallet/solflare/useSolflareConnection";
+import { useWalletConnection } from "@/src/hooks/wallet";
+import { WalletType } from "@/src/enums/wallet.enums";
 import { useSession } from "@/src/hooks/session";
 
 const SolflareConnect: React.FC = () => {
   const router = useRouter();
-  const { connect, connectionState } = useSolflareConnection();
+  const { connect, connectionState } = useWalletConnection(WalletType.SOLFLARE);
   const { getSession } = useSession();
   const [isButtonPressed, setIsButtonPressed] = useState(false);
 

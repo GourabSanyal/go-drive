@@ -11,12 +11,13 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { useBackpackConnection } from "@/src/hooks/wallet/backpack/useBackpackConnection";
+import { useWalletConnection } from "@/src/hooks/wallet";
+import { WalletType } from "@/src/enums/wallet.enums";
 import { useSession } from "@/src/hooks/session";
 
 const BackpackConnect: React.FC = () => {
   const router = useRouter();
-  const { connect, connectionState } = useBackpackConnection();
+  const { connect, connectionState } = useWalletConnection(WalletType.BACKPACK);
   const { getSession } = useSession();
   const [isButtonPressed, setIsButtonPressed] = useState(false);
 

@@ -7,7 +7,8 @@ import {
   Image,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { usePhantomConnection } from "@/src/hooks/wallet/phantom/usePhantomConnection";
+import { useWalletConnection } from "@/src/hooks/wallet";
+import { WalletType } from "@/src/enums/wallet.enums";
 import { useSession } from "@/src/hooks/session";
 import {
   heightPercentageToDP as hp,
@@ -16,7 +17,7 @@ import {
 
 const PhantomConnect: React.FC = () => {
   const router = useRouter();
-  const { connect, connectionState } = usePhantomConnection();
+  const { connect, connectionState } = useWalletConnection(WalletType.PHANTOM);
   const { getSession } = useSession();
   const [isButtonPressed, setIsButtonPressed] = useState(false);
 
