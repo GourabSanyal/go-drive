@@ -2,18 +2,18 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { Linking } from "react-native";
 import { useSession } from "../../session";
 import { SolflareAdapter } from "@/src/adapters/wallet/SolflareAdapter";
-import { WalletConnectionState } from "@/src/types/wallet/wallet.types";
+import { WalletConnectionState } from "@/src/enums/wallet.enums";
+import { WalletConnectionState as IWalletConnectionState } from "@/src/types/wallet/wallet.types";
 
 export const useSolflareConnection = () => {
-  const [connectionState, setConnectionState] = useState<WalletConnectionState>(
-    {
-      state: "disconnected" as any,
+  const [connectionState, setConnectionState] =
+    useState<IWalletConnectionState>({
+      state: WalletConnectionState.DISCONNECTED,
       isConnecting: false,
       isCheckingConnection: false,
       error: null,
       isConnected: false,
-    }
-  );
+    });
 
   const sessionHook = useSession();
   const adapterRef = useRef<SolflareAdapter | null>(null);
