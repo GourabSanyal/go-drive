@@ -58,7 +58,7 @@ export class SolflareAdapter extends BaseWalletAdapter {
       this.setConnectionState({
         state: 'error' as any,
         isConnecting: false,
-        error: error instanceof Error ? error.message : 'Failed to connect to Solflare'
+        error: error instanceof Error ? `Solflare: ${error.message}` : 'Failed to connect to Solflare'
       });
     }
   }

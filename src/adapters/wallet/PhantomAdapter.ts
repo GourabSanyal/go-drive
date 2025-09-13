@@ -74,7 +74,7 @@ export class PhantomAdapter extends BaseWalletAdapter {
         isConnecting: false,
         error:
           error instanceof Error
-            ? error.message
+            ? `Phantom: ${error.message}`
             : "Failed to connect to Phantom",
       });
     }

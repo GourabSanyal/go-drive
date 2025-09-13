@@ -73,7 +73,7 @@ export class BackpackAdapter extends BaseWalletAdapter {
         isConnecting: false,
         error:
           error instanceof Error
-            ? error.message
+            ? `Backpack: ${error.message}`
             : "Failed to connect to Backpack",
       });
     }
