@@ -1,36 +1,52 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Alert, TouchableOpacity, View, ActivityIndicator, Image, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
-import { usePhantomConnection } from '@/src/hooks/wallet/phantom/usePhantomConnection';
-import { useSession } from '@/src/hooks/session';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import React, { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  ActivityIndicator,
+  Image,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { usePhantomConnection } from "@/src/hooks/wallet/phantom/usePhantomConnection";
+import { useSession } from "@/src/hooks/session";
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from "react-native-responsive-screen";
 
 const PhantomConnect: React.FC = () => {
   const router = useRouter();
   const { connect, connectionState } = usePhantomConnection();
   const { getSession } = useSession();
+  const [isButtonPressed, setIsButtonPressed] = useState(false);
 
-  // Handle connection state changes
+  const handleConnect = async () => {
+    setIsButtonPressed(true);
+    try {
+      await connect();
+    } catch (error) {
+      setIsButtonPressed(false);
+    }
+  };
+
   useEffect(() => {
     if (connectionState.error) {
-      Alert.alert(
-        'Connection Error 1',
-        connectionState.error,
-        [{ text: 'OK' }]
-      );
+      setIsButtonPressed(false);
+      Alert.alert("Phantom Connection Error", connectionState.error, [
+        { text: "OK" },
+      ]);
     }
 
     if (connectionState.isConnected) {
-      // Check if session was saved successfully
+      setIsButtonPressed(false);
       const session = getSession();
       if (session) {
-        console.log('✅ Session saved successfully, redirecting...');
-        router.replace('/driver/home');
+        router.replace("/driver/home");
       } else {
         Alert.alert(
-          'Connection Error 2',
-          'Failed to save session data. Please try again.',
-          [{ text: 'OK' }]
+          "Phantom Connection Error",
+          "Failed to save session data. Please try again.",
+          [{ text: "OK" }]
         );
       }
     }
@@ -40,17 +56,30 @@ const PhantomConnect: React.FC = () => {
     <TouchableOpacity
       style={[
         styles.circularButton,
-        { opacity: connectionState.isConnecting || connectionState.isCheckingConnection ? 0.7 : 1 }
+        {
+          opacity:
+            isButtonPressed ||
+            connectionState.isConnecting ||
+            connectionState.isCheckingConnection
+              ? 0.7
+              : 1,
+        },
       ]}
       activeOpacity={0.8}
-      disabled={connectionState.isConnecting || connectionState.isCheckingConnection}
-      onPress={connect}
+      disabled={
+        isButtonPressed ||
+        connectionState.isConnecting ||
+        connectionState.isCheckingConnection
+      }
+      onPress={handleConnect}
     >
-      {connectionState.isConnecting || connectionState.isCheckingConnection ? (
+      {isButtonPressed ||
+      connectionState.isConnecting ||
+      connectionState.isCheckingConnection ? (
         <ActivityIndicator size="small" color="#FFFFFF" />
       ) : (
         <Image
-          source={require('@/assets/images/icons/phantom/phantom-wallet-icon.png')}
+          source={require("@/assets/images/icons/phantom/phantom-wallet-icon.png")}
           style={styles.phantomIcon}
           resizeMode="contain"
         />
@@ -62,21 +91,20 @@ const PhantomConnect: React.FC = () => {
 const styles = StyleSheet.create({
   circularButton: {
     width: wp(20),
-    height: wp(20), 
+    height: wp(20),
     borderRadius: wp(10),
-    backgroundColor: '#202020',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
+    backgroundColor: "#202020",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: hp(0.5) },
     shadowOpacity: 0.2,
     shadowRadius: wp(2),
     elevation: 5,
-    marginVertical: hp(1.2),
   },
   phantomIcon: {
-    width: wp(12.5), 
-    height: wp(12.5), 
+    width: wp(12.5),
+    height: wp(12.5),
   },
 });
 
