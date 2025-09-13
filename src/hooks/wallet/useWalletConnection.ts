@@ -94,14 +94,17 @@ export const useWalletConnection = (walletType: WalletType) => {
   // Set up deep link listener
   useEffect(() => {
     const handleUrl = (event: { url: string }) => {
-      handleConnectionResponse(event.url);
+      // Only process URLs relevant to this wallet type
+      if (isRelevantUrl(event.url, walletType)) {
+        handleConnectionResponse(event.url);
+      }
     };
 
     const subscription = Linking.addEventListener('url', handleUrl);
     
     // Check if app was opened with a deep link
     Linking.getInitialURL().then((url) => {
-      if (url) {
+      if (url && isRelevantUrl(url, walletType)) {
         handleConnectionResponse(url);
       }
     });
@@ -109,7 +112,7 @@ export const useWalletConnection = (walletType: WalletType) => {
     return () => {
       subscription?.remove();
     };
-  }, [handleConnectionResponse]);
+  }, [handleConnectionResponse, walletType]);
 
   // Check connection status periodically while connecting
   useEffect(() => {
@@ -142,4 +145,23 @@ export const useWalletConnection = (walletType: WalletType) => {
     checkInstalled,
     connectionState,
   };
+};
+
+/**
+ * Check if URL is relevant to the specific wallet type
+ */
+const isRelevantUrl = (url: string, walletType: WalletType): boolean => {
+  switch (walletType) {
+    case WalletType.PHANTOM:
+      return url.includes('phantom') || 
+             (url.includes('drive://') && url.includes('phantom_encryption_public_key'));
+    case WalletType.SOLFLARE:
+      return url.includes('solflare') || 
+             (url.includes('drive://') && url.includes('solflare_encryption_public_key'));
+    case WalletType.BACKPACK:
+      return url.includes('backpack') || 
+             (url.includes('drive://') && (url.includes('backpack_encryption_public_key') || url.includes('wallet_encryption_public_key')));
+    default:
+      return false;
+  }
 };
