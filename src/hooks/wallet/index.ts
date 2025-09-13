@@ -1,8 +1,3 @@
-// Individual wallet hooks
-export { usePhantomConnection } from './phantom/usePhantomConnection';
-export { useSolflareConnection } from './solflare/useSolflareConnection';
-export { useBackpackConnection } from './backpack/useBackpackConnection';
-
 // Generic wallet connection hook
 export { useWalletConnection } from './useWalletConnection';
 
