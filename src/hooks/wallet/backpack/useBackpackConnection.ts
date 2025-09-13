@@ -57,10 +57,7 @@ export const useBackpackConnection = () => {
       ) {
         handleConnectionResponse(event.url);
       } else {
-        Alert.alert(
-          "🔗 Backpack ignoring deep link (not relevant):",
-          event.url
-        );
+        return;
       }
     };
 
