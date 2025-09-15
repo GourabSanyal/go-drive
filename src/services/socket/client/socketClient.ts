@@ -9,8 +9,8 @@ import { QuotationRequest } from "../../../types/quotation.types";
 // import { validate } from "@utils/zod/validate";
 
 // It's good practice to use an environment variable for the URL
-const SOCKET_SERVER_URL =
-  process.env.EXPO_PUBLIC_SOCKET_SERVER_URL || "http://10.0.2.2:4000";
+const EXPO_LOCAL_SOCKET_SERVER_URL =
+  process.env.EXPO_PUBLIC_SOCKET_SERVER_URL || "http://10.0.2.2:4000" || "http://localhost:4000/socket.io/"; // last one to test the server locally
 
 class SocketClient {
   private socket: Socket | null = null;
@@ -31,7 +31,7 @@ class SocketClient {
 
   private initializeSocket() {
     // IMPORTANT: Changed server URL
-    this.socket = io(SOCKET_SERVER_URL, {
+    this.socket = io(EXPO_LOCAL_SOCKET_SERVER_URL, {
       transports: ["websocket"],
       autoConnect: false,
       reconnection: true,
@@ -70,7 +70,7 @@ class SocketClient {
     if (!this.socket) return;
 
     this.socket.on("connect", () => {
-      console.log("Connected to server:", SOCKET_SERVER_URL);
+      console.log("Connected to server:", EXPO_LOCAL_SOCKET_SERVER_URL);
       this.isConnected = true;
       if (this.socket?.id) {
         this.socketId = this.socket.id;
