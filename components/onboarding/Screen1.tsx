@@ -30,7 +30,7 @@ const Screen1 = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress={() => router.push("/auth/signup")}>
+                    onPress={() => router.push("/auth/login")}>
                     <CustomText style={styles.link}>
                         Skip
                     </CustomText>
