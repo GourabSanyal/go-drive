@@ -1,5 +1,53 @@
-# go-drive
-Driver application for GoCabs
+# 🚘 Go Cabs Driver App
+
+This is the **Driver App** for Go Cabs — the decentralized ride-hailing platform built on sustainability, transparency, and fair economics. It empowers EV drivers with full control of their income, direct rider interactions, and zero platform commissions.
+
+---
+## Rider app repository : https://github.com/codewithnazim/go-cabs-native
+
+# 🌟 Key Features
+
+- 📲 **Live Ride Requests**  
+  Receive incoming ride requests in real-time with route, distance, and rider info.
+
+- 💬 **Fare Negotiation**  
+  Set your own price or counter rider offers through an in-app bid system.
+
+- 👥 **Community Page**  
+  Access community insights and rider reviews — build your reputation on-chain.
+
+- 💰 **Earnings Dashboard**  
+  Track daily, weekly, and all-time earnings, transparently and commission-free.
+
+- 🛻 **Vehicle & Profile Info**  
+  Manage your EV details, licenses, and ID credentials in one clean dashboard.
+
+---
+
+# ⚙️ Tech Stack
+
+| Tech                      | Purpose                           |
+|---------------------------|-----------------------------------|
+| React Native + TypeScript | Mobile app for drivers            |
+| Firebase Auth             | Secure login                      |
+| Firebase Realtime DB      | Live request syncing              |
+| Socket.IO                 | Real-time rider-driver matching   |
+| Mapbox API                | Location input & mapping          |
+| Anchor                    | On-chain escrow wallet (Solana)   |
+| OpenCharge API            | EV charging station locator       |
+
+---
+
+📱 Live Demo 
+🎥 Watch the full App demo on YouTube:  
+[![Watch Now](https://www.youtube.com/watch?v=E5tLv4YkVqs&t=3s/hqdefault.jpg)](https://www.youtube.com/watch?v=E5tLv4YkVqs&t=3s)  
+🔗 [Click here to watch](https://www.youtube.com/watch?v=E5tLv4YkVqs&t=3s)
+
+- Waitlist: Join Now at https://www.gocabs.xyz/
+
+- Telegram Community: https://t.me/GoCabsTG
+
+# 🚀 Getting Started (For Developers)
 
 1. Use node version: `LTS 22.11.0`
 2. yarn version: `4.5.3 or >= 4`
@@ -10,25 +58,17 @@ Make sure to add your Android SDK location in `android/local.properties` > `sdk.
   1. Run at the root of the project: `yarn install`
   2. Install pods: `cd ios && pod install`
 
-## Run expo build, scan in a mobile device with the pre-installed Expo Go application
+## Run iOS and Android
+  1. Start server: `yarn start`
+  2. Start IOS emulator: `i`, Android emulator: `a`
+  3. If you want to get a dev build without starting the server first, run `yarn run ios` for iOS dev build, and `yarn run android` for Android build
+  4. You can create dev builds using the USB debugger option. [Read the documentation](https://reactnative.dev/docs/running-on-device)
 
-1. Start dev server from root of the project: `yarn start`
-2. run iOS: `i`
-3. run in Android: `a`
-
-## Using Expo Dev Build
-1. Same as regular expo build, but this makes sure you can generate the app as a standalone app in the emulator with a dev build
-2. For iOS: `yarn ios`
-3. For Android: `yarn android`
-4. Open debugger menu: `cmd + ctrl + z`
-5. Physical device: Install the Expo Go app and scan the QR code after starting the dev server.
-
-## EAS build
+## Use EAS developer build from Expo Dev Dashboard
 1. Go through this link first if you are not familiar with EAS build: https://docs.expo.dev/develop/development-builds/create-a-build/
-2. Log in to your EAS account from the terminal
-3. For IOS: `yarn run eas:ios`
-4. For Android: `yarn run eas:android`
-5. Physical device: Expo Orbit
+2. Log in to your EAS account from the terminal.
+3. iOS: EAS build number `f93736c1` (iOS simulator build), from the Expo dev dashboard,  start with `Open with Orbit`.
+4. Android: EAS build number `19028b4d` (Android internal distribution build), from the Expo dev dashboard, and then install on the device.
 
  ## Use Prebuild - when and how?
 
