@@ -72,6 +72,8 @@ yarn-error.*
 # local env files
 .env*.local
 
+pnpm-lock.yaml
+
 # typescript
 *.tsbuildinfo
 

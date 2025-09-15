@@ -4949,15 +4949,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/socket.io@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@types/socket.io@npm:3.0.2"
-  dependencies:
-    socket.io: "npm:*"
-  checksum: 10c0/581b02b3e1d9b8da726d933d373b9fa72e22440f3f71da74be98f9e0a53545918439ffcadd00e7a8a23cb98d80baf9394c9700fa55a323886ed48de6b4d45d4d
-  languageName: node
-  linkType: hard
-
 "@types/stack-utils@npm:^2.0.0":
   version: 2.0.3
   resolution: "@types/stack-utils@npm:2.0.3"
@@ -7475,7 +7466,6 @@ __metadata:
     "@types/node": "npm:^22.15.14"
     "@types/react": "npm:~18.3.12"
     "@types/react-native-get-random-values": "npm:^1"
-    "@types/socket.io": "npm:^3.0.2"
     "@types/ws": "npm:^8.18.1"
     "@ui-kitten/components": "npm:^5.3.1"
     bs58: "npm:^6.0.0"
@@ -14690,7 +14680,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io@npm:*, socket.io@npm:^4.8.1":
+"socket.io@npm:^4.8.1":
   version: 4.8.1
   resolution: "socket.io@npm:4.8.1"
   dependencies:
